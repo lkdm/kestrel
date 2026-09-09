@@ -9,8 +9,11 @@ fn main() {
     let system = SystemImpl;
     let checks = CHECKS;
     for check in checks {
-        let result = (check.run)(&system);
-        println!("{:?}", result)
+        match (check.run)(&system) {
+            Ok(true) => println!("[PASS] {}", check.description),
+            Ok(false) => println!("[FAIL] {}", check.description),
+            Err(error) => println!("[ERROR] {}: {}", check.description, error),
+        }
     }
     println!("done");
 }
