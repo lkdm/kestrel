@@ -115,6 +115,7 @@ dependencies = [
 name = "kestrel"
 version = "0.1.0"
 dependencies = [
+ "console",
  "indicatif",
  "rayon",
  "thiserror",

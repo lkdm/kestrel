@@ -1,4 +1,5 @@
 use crate::{checks::CHECKS, system::SystemImpl};
+use console::style;
 use indicatif::{ProgressBar, ProgressStyle};
 use rayon::prelude::*;
 use std::{print, println};
@@ -35,12 +36,39 @@ fn main() {
 
     progress.finish_and_clear();
 
+    let mut passed = Vec::new();
+    let mut failed = Vec::new();
+    let mut errors = Vec::new();
+
     for (check, result) in results {
         match result {
-            Ok(true) => println!("[PASS] {}", check.description),
-            Ok(false) => println!("[FAIL] {}", check.description),
-            Err(error) => println!("[ERROR] {}: {}", check.description, error),
+            Ok(true) => passed.push(check),
+            Ok(false) => failed.push(check),
+            Err(error) => errors.push((check, error)),
         }
     }
-    println!("done");
+
+    if !passed.is_empty() {
+        println!("\n{}", style("PASS").green().bold());
+
+        for check in passed {
+            println!("  {} {}", style("✓").green(), check.description);
+        }
+    }
+
+    if !failed.is_empty() {
+        println!("\n{}", style("FAIL").red().bold());
+
+        for check in failed {
+            println!("  {} {}", style("✗").red(), check.description);
+        }
+    }
+
+    if !errors.is_empty() {
+        println!("\n{}", style("ERROR").yellow().bold());
+
+        for (check, error) in errors {
+            println!("  {} {}: {}", style("!").yellow(), check.description, error);
+        }
+    }
 }
