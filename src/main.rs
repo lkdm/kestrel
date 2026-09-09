@@ -10,20 +10,30 @@ fn main() {
     let system = SystemImpl;
     let checks = CHECKS;
 
-    let spinner = ProgressBar::new_spinner();
-    spinner
-        .set_style(ProgressStyle::with_template("{spinner} Running security checks...").unwrap());
-    spinner.enable_steady_tick(std::time::Duration::from_millis(100));
+    let progress = ProgressBar::new(checks::CHECKS.len() as u64);
 
-    let results: Vec<_> = checks
+    progress.set_style(
+        ProgressStyle::with_template(
+            "Kestrel is running {spinner:.green.bold}\n\
+             \n\
+             \tElapsed:  {elapsed_precise}\n\
+             \tProgress: {pos}/{len} checks",
+        )
+        .unwrap(),
+    );
+
+    progress.enable_steady_tick(std::time::Duration::from_millis(100));
+
+    let results: Vec<_> = checks::CHECKS
         .par_iter()
         .map(|check| {
             let result = (check.run)(&system);
+            progress.inc(1);
             (check, result)
         })
         .collect();
 
-    spinner.finish_and_clear();
+    progress.finish_and_clear();
 
     for (check, result) in results {
         match result {
