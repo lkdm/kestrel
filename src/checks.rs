@@ -1,139 +1,37 @@
+use std::io;
+
 use crate::system::System;
 
-#[derive(Debug)]
+#[cfg(target_os = "macos")]
+pub mod macos;
+
+#[cfg(target_os = "windows")]
+pub mod windows;
+
+#[cfg(target_os = "linux")]
+pub mod linux;
+
+#[cfg(target_os = "macos")]
+pub use macos::CHECKS;
+
+#[cfg(target_os = "windows")]
+pub use windows::CHECKS;
+
+#[cfg(target_os = "linux")]
+pub use linux::CHECKS;
+
+#[derive(Debug, Clone, Copy)]
 pub struct Check {
+    /// unique check identifier
     pub id: &'static str,
+    /// human-readable description
     pub description: &'static str,
-    pub query: Query,
-    pub assertion: Assertion,
+    /// function to run the check
+    pub run: CheckFn,
 }
 
-#[derive(Debug)]
-pub enum Query {
-    /// check if file exists
-    FileExists { path: &'static str },
-    /// run a command
-    Command {
-        program: &'static str,
-        args: &'static [&'static str],
-    },
-    /// check linux configuration
-    Sysctl { key: &'static str },
-    /// check windows configuration
-    Registry { key: &'static str },
-    /// check macos configuration
-    MacosPreference {
-        domain: &'static str,
-        key: &'static str,
-    },
-}
+/// runs the check
+pub type CheckFn = fn(&dyn System) -> CheckResult;
 
-#[derive(Debug)]
-pub enum Assertion {
-    True,
-    False,
-    Equals(Value),
-    NotEquals(Value),
-    Contains(&'static str),
-    GreaterThan(i64),
-    LessThan(i64),
-}
-
-#[derive(Debug)]
-pub enum Value {
-    Boolean(bool),
-    Integer(i64),
-    String(String),
-}
-
-#[derive(Debug)]
-pub enum CheckStatus {
-    Pass,
-    Fail,
-    Unknown,
-    NotApplicable,
-    Error,
-}
-
-#[derive(Debug)]
-pub struct CheckResult {
-    pub status: CheckStatus,
-    pub value: Option<Value>,
-}
-
-pub fn evaluate(check: &Check, system: &dyn System) -> CheckResult {
-    let value = match observe(&check.query, system) {
-        Ok(value) => value,
-        Err(_) => {
-            return CheckResult {
-                status: CheckStatus::Error,
-                value: None,
-            };
-        }
-    };
-
-    let status = evaluate_assertion(&check.assertion, &value);
-
-    CheckResult {
-        status,
-        value: Some(value),
-    }
-}
-
-fn observe(query: &Query, system: &dyn System) -> std::io::Result<Value> {
-    match query {
-        Query::FileExists { path } => Ok(Value::Boolean(
-            system.path_exists(std::path::Path::new(path))?,
-        )),
-
-        Query::Command { program, args } => {
-            let result = system.command(program, args)?;
-
-            Ok(Value::String(
-                String::from_utf8_lossy(&result.stdout).into_owned(),
-            ))
-        }
-
-        Query::Sysctl { key } => {
-            // system-specific implementation
-            todo!()
-        }
-
-        Query::Registry { key } => {
-            // system-specific implementation
-            todo!()
-        }
-
-        Query::MacosPreference { domain, key } => {
-            // system-specific implementation
-            todo!()
-        }
-    }
-}
-
-fn evaluate_assertion(assertion: &Assertion, value: &Value) -> CheckStatus {
-    match assertion {
-        Assertion::True => match value {
-            Value::Boolean(true) => CheckStatus::Pass,
-            Value::Boolean(false) => CheckStatus::Fail,
-            _ => CheckStatus::Error,
-        },
-
-        Assertion::False => match value {
-            Value::Boolean(false) => CheckStatus::Pass,
-            Value::Boolean(true) => CheckStatus::Fail,
-            _ => CheckStatus::Error,
-        },
-
-        Assertion::Equals(expected) => {
-            if value == expected {
-                CheckStatus::Pass
-            } else {
-                CheckStatus::Fail
-            }
-        }
-
-        // ...
-        _ => todo!(),
-    }
-}
+/// answers: did the check pass?
+pub type CheckResult = io::Result<bool>;

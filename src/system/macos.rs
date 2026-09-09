@@ -3,8 +3,6 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::{checks::Value, system::SystemProperty};
-
 use super::{CommandResult, System, common};
 
 #[derive(Debug, Default)]
@@ -25,44 +23,5 @@ impl System for MacOSSystem {
 
     fn read_binary(&self, path: &Path) -> io::Result<Vec<u8>> {
         common::read_binary(path)
-    }
-
-    fn read_property(&self, property: &SystemProperty) -> Option<io::Result<Value>> {
-        match property {
-            SystemProperty::FirewallEnabled => Some(self.firewall_enabled()),
-
-            SystemProperty::DiskEncryptionEnabled => Some(self.disk_encryption_enabled()),
-
-            SystemProperty::ScreenLockTimeout => Some(self.screen_lock_timeout()),
-
-            // This property has no meaningful macOS implementation.
-            SystemProperty::WindowsDefenderEnabled => None,
-        }
-    }
-}
-
-impl MacOSSystem {
-    fn firewall_enabled(&self) -> io::Result<Value> {
-        let result = self.command(
-            "/usr/libexec/ApplicationFirewall/socketfilterfw",
-            &["--getglobalstate"],
-        )?;
-
-        let output = String::from_utf8_lossy(&result.stdout);
-
-        Ok(Value::Boolean(output.contains("Firewall is enabled")))
-    }
-
-    fn disk_encryption_enabled(&self) -> io::Result<Value> {
-        let result = self.command("fdesetup", &["status"])?;
-
-        let output = String::from_utf8_lossy(&result.stdout);
-
-        Ok(Value::Boolean(output.contains("FileVault is On")))
-    }
-
-    fn screen_lock_timeout(&self) -> io::Result<Value> {
-        // Implement when you actually need this property.
-        todo!()
     }
 }

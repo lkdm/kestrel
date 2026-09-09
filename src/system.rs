@@ -3,7 +3,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::{checks::Value, system::common::command::CommandResult};
+use crate::system::common::command::CommandResult;
 pub mod common;
 
 #[cfg(target_os = "macos")]
@@ -31,16 +31,4 @@ pub trait System {
 
     /// read a file, returning binary data
     fn read_binary(&self, path: &Path) -> io::Result<Vec<u8>>;
-
-    /// reads a system property
-    ///
-    /// returns `None` if the check is not applicable
-    fn read_property(&self, property: &SystemProperty) -> Option<io::Result<Value>>;
-}
-
-pub enum SystemProperty {
-    FirewallEnabled,
-    DiskEncryptionEnabled,
-    ScreenLockTimeout,
-    WindowsDefenderEnabled,
 }

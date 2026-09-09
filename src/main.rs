@@ -1,9 +1,16 @@
-use crate::system::SystemImpl;
+use std::{print, println};
+
+use crate::{checks::CHECKS, system::SystemImpl};
 
 pub mod checks;
 pub mod system;
 
 fn main() {
     let system = SystemImpl;
-    println!("Hello, world!");
+    let checks = CHECKS;
+    for check in checks {
+        let result = (check.run)(&system);
+        println!("{:?}", result)
+    }
+    println!("done");
 }
