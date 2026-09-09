@@ -48,10 +48,12 @@ fn main() {
         }
     }
 
+    let has_failures = !failed.is_empty() || !errors.is_empty();
+
     if !passed.is_empty() {
         println!("\n{}", style("PASS").green().bold());
 
-        for check in passed {
+        for check in &passed {
             println!("  {} {}", style("✓").green(), check.description);
         }
     }
@@ -59,7 +61,7 @@ fn main() {
     if !failed.is_empty() {
         println!("\n{}", style("FAIL").red().bold());
 
-        for check in failed {
+        for check in &failed {
             println!("  {} {}", style("✗").red(), check.description);
         }
     }
@@ -67,8 +69,10 @@ fn main() {
     if !errors.is_empty() {
         println!("\n{}", style("ERROR").yellow().bold());
 
-        for (check, error) in errors {
+        for (check, error) in &errors {
             println!("  {} {}: {}", style("!").yellow(), check.description, error);
         }
     }
+
+    std::process::exit(if has_failures { 1 } else { 0 });
 }
