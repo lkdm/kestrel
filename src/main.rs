@@ -15,8 +15,6 @@ pub mod scan;
 pub mod system;
 pub mod tracing;
 
-pub const VERSION: &str = env!("CARGO_PKG_VERSION");
-
 fn main() {
     if let Err(error) = run() {
         cli::print_error(&error);
