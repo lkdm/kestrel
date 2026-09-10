@@ -45,9 +45,13 @@ pub enum Commands {
         )]
         output: OutputFormat,
 
-        /// disable progress indicator
-        #[arg(long)]
-        no_progress: bool,
+        /// how progress is shown
+        #[arg(
+            long,
+            value_enum,
+            default_value_t = ProgressMode::Tui
+        )]
+        progress: ProgressMode,
 
         /// disable parallelisation
         #[arg(long)]
@@ -64,6 +68,16 @@ pub enum Commands {
         #[command(subcommand)]
         command: ConfigCommands,
     },
+}
+
+#[derive(Debug, Clone, Copy, ValueEnum)]
+pub enum ProgressMode {
+    /// progress is shown as an animation
+    Tui,
+    /// progress is shown as a log
+    Logs,
+    /// progress is not shown
+    None,
 }
 
 #[derive(Debug, Subcommand)]
@@ -94,10 +108,10 @@ pub fn print_scan(result: ScanResult, format: OutputFormat) {
     }
 }
 
-pub fn progress(len: usize, enabled: bool) -> ProgressBar {
+pub fn progress(len: usize, mode: ProgressMode) -> ProgressBar {
     let progress = ProgressBar::new(len as u64);
 
-    if !enabled {
+    if !matches!(mode, ProgressMode::Tui) {
         progress.set_draw_target(indicatif::ProgressDrawTarget::hidden());
         return progress;
     }

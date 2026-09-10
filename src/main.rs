@@ -1,5 +1,5 @@
 use crate::checks::Checks;
-use crate::cli::{Cli, Commands};
+use crate::cli::{Cli, Commands, ProgressMode};
 use crate::error::AppError;
 use crate::list::list_checks;
 use crate::scan::ScanContext;
@@ -12,6 +12,7 @@ pub mod error;
 pub mod list;
 pub mod scan;
 pub mod system;
+pub mod tracing;
 
 fn main() {
     if let Err(error) = run() {
@@ -38,12 +39,16 @@ fn run() -> Result<(), AppError> {
         Commands::Scan {
             checks,
             output,
-            no_progress,
+            progress,
             no_parallel,
         } => {
+            if matches!(progress, ProgressMode::Logs) {
+                tracing::init_terminal();
+            }
+
             let checks = Checks::select(&checks)?;
             let context = ScanContext::new(&checks, !no_parallel);
-            let progress = cli::progress(checks.len(), !no_progress);
+            let progress = cli::progress(checks.len(), progress);
 
             let result = scan::scan(&context, &system, || {
                 progress.inc(1);

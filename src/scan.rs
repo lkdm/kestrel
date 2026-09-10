@@ -35,8 +35,31 @@ pub fn scan<F>(
 where
     F: Fn() + Sync,
 {
+    tracing::info!(
+        checks = context.checks.len(),
+        parallel = context.parallel,
+        "starting scan"
+    );
     let run = |check: &'static Check| {
+        tracing::info!(check = check.id, "running check");
         let result = (check.run)(system);
+
+        match &result {
+            Ok(true) => {
+                tracing::info!(check = check.id, "check passed");
+            }
+            Ok(false) => {
+                tracing::info!(check = check.id, "check failed");
+            }
+            Err(error) => {
+                tracing::error!(
+                    check = check.id,
+                    error = %error,
+                    "check encountered an error"
+                );
+            }
+        }
+
         on_check_complete();
         (check, result)
     };
@@ -47,5 +70,6 @@ where
         context.checks.iter().map(run).collect()
     };
 
+    tracing::info!("scan completed"); // TODO: add count of passed, failed, errors
     ScanResult { results }
 }
