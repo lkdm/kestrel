@@ -31,10 +31,10 @@ pub struct Check {
 }
 
 /// runs the check
-pub type CheckFn = fn(&dyn System) -> CheckResult;
+pub type CheckFn = fn(&dyn System) -> CheckReturnedResult;
 
 /// answers: did the check pass?
-pub type CheckResult = io::Result<bool>;
+pub type CheckReturnedResult = io::Result<bool>;
 
 #[derive(Debug, thiserror::Error)]
 pub enum ChecksError {

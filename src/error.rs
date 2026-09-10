@@ -4,4 +4,7 @@ use crate::checks::ChecksError;
 pub enum AppError {
     #[error(transparent)]
     Checks(#[from] ChecksError),
+
+    #[error(transparent)]
+    Json(#[from] serde_json::Error),
 }

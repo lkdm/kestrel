@@ -1,9 +1,9 @@
 use crate::{
-    checks::{Check, CheckResult},
+    checks::{Check, CheckReturnedResult},
     system::System,
 };
 
-fn filevault_enabled(system: &dyn System) -> CheckResult {
+fn filevault_enabled(system: &dyn System) -> CheckReturnedResult {
     let result = system.command("/usr/bin/fdesetup", &["status"])?;
 
     Ok(String::from_utf8_lossy(&result.stdout).contains("FileVault is On"))

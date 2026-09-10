@@ -1,9 +1,9 @@
 use crate::{
-    checks::{Check, CheckResult},
+    checks::{Check, CheckReturnedResult},
     system::System,
 };
 
-fn remote_login_disabled(system: &dyn System) -> CheckResult {
+fn remote_login_disabled(system: &dyn System) -> CheckReturnedResult {
     let result = system.command("/usr/sbin/systemsetup", &["-getremotelogin"])?;
 
     Ok(String::from_utf8_lossy(&result.stdout).contains("Remote Login: Off"))

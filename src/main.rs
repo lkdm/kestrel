@@ -56,7 +56,7 @@ fn run() -> Result<(), AppError> {
 
             progress.finish_and_clear();
 
-            cli::print_scan(result, output);
+            cli::print_scan(result, output)?;
         }
 
         Commands::Config { command } => {}

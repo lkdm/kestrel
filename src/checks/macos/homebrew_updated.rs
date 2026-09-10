@@ -1,9 +1,9 @@
 use crate::{
-    checks::{Check, CheckResult},
+    checks::{Check, CheckReturnedResult},
     system::System,
 };
 
-fn homebrew_updated(system: &dyn System) -> CheckResult {
+fn homebrew_updated(system: &dyn System) -> CheckReturnedResult {
     let result = match system.command("brew", &["outdated", "--quiet"]) {
         Ok(result) => result,
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {

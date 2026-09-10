@@ -1,9 +1,9 @@
 use crate::{
-    checks::{Check, CheckResult},
+    checks::{Check, CheckReturnedResult},
     system::System,
 };
 
-fn firewall_block_all(system: &dyn System) -> CheckResult {
+fn firewall_block_all(system: &dyn System) -> CheckReturnedResult {
     let result = system.command(
         "/usr/libexec/ApplicationFirewall/socketfilterfw",
         &["--getblockall"],

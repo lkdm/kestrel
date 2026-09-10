@@ -1,9 +1,9 @@
 use crate::{
-    checks::{Check, CheckResult},
+    checks::{Check, CheckReturnedResult},
     system::System,
 };
 
-fn gatekeeper_enabled(system: &dyn System) -> CheckResult {
+fn gatekeeper_enabled(system: &dyn System) -> CheckReturnedResult {
     let result = system.command("/usr/sbin/spctl", &["--status"])?;
 
     Ok(String::from_utf8_lossy(&result.stdout).contains("assessments enabled"))

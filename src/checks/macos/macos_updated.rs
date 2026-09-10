@@ -1,9 +1,9 @@
 use crate::{
-    checks::{Check, CheckResult},
+    checks::{Check, CheckReturnedResult},
     system::System,
 };
 
-fn macos_updated(system: &dyn System) -> CheckResult {
+fn macos_updated(system: &dyn System) -> CheckReturnedResult {
     let result = system.command("/usr/sbin/softwareupdate", &["--list"])?;
 
     let output = String::from_utf8_lossy(&result.stdout);

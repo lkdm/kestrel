@@ -100,11 +100,20 @@ pub enum OutputFormat {
     Json,
 }
 
-pub fn print_scan(result: ScanResult, format: OutputFormat) {
-    match format {
-        OutputFormat::Human => print_scan_human(result),
-        OutputFormat::Simple => print_scan_simple(result),
-        OutputFormat::Json => print_scan_json(result),
+pub fn print_scan(result: ScanResult, output: OutputFormat) -> Result<(), AppError> {
+    match output {
+        OutputFormat::Human => {
+            print_scan_human(result);
+            Ok(())
+        }
+        OutputFormat::Simple => {
+            print_scan_simple(result);
+            Ok(())
+        }
+        OutputFormat::Json => {
+            print_scan_json(result)?;
+            Ok(())
+        }
     }
 }
 
@@ -136,11 +145,11 @@ pub fn print_scan_human(result: ScanResult) {
     let mut failed = Vec::new();
     let mut errors = Vec::new();
 
-    for (check, result) in result.results {
-        match result {
+    for check in result.checks {
+        match &check.result {
             Ok(true) => passed.push(check),
             Ok(false) => failed.push(check),
-            Err(error) => errors.push((check, error)),
+            Err(_) => errors.push(check),
         }
     }
 
@@ -163,15 +172,17 @@ pub fn print_scan_human(result: ScanResult) {
     if !errors.is_empty() {
         println!("\n{}", style("ERROR").yellow().bold());
 
-        for (check, error) in &errors {
+        for check in &errors {
+            let error = check.result.as_ref().unwrap_err();
+
             println!("  {} {}: {}", style("!").yellow(), check.description, error);
         }
     }
 }
 
 pub fn print_scan_simple(result: ScanResult) {
-    for (check, result) in result.results {
-        match result {
+    for check in result.checks {
+        match check.result {
             Ok(true) => println!("PASS {}", check.id),
             Ok(false) => println!("FAIL {}", check.id),
             Err(error) => println!("ERROR {}: {}", check.id, error),
@@ -179,8 +190,9 @@ pub fn print_scan_simple(result: ScanResult) {
     }
 }
 
-pub fn print_scan_json(result: ScanResult) {
-    todo!()
+pub fn print_scan_json(result: ScanResult) -> Result<(), serde_json::Error> {
+    println!("{}", serde_json::to_string_pretty(&result)?);
+    Ok(())
 }
 
 pub fn print_checks(result: ListChecksResult) {

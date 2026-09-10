@@ -1,7 +1,8 @@
 use rayon::iter::ParallelIterator;
+use serde::Serialize;
 
 use crate::{
-    checks::{Check, CheckResult, Checks},
+    checks::{Check, CheckReturnedResult, Checks},
     system::System,
 };
 
@@ -22,9 +23,32 @@ impl ScanContext {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
+pub struct CheckResult {
+    pub id: &'static str,
+    pub description: &'static str,
+    pub result: Result<bool, String>,
+}
+
+impl CheckResult {
+    pub fn new(check: &Check, result: CheckReturnedResult) -> Self {
+        Self {
+            id: check.id,
+            description: check.description,
+            result: result.map_err(|error| error.to_string()),
+        }
+    }
+}
+
+#[derive(Debug, Serialize)]
 pub struct ScanResult {
-    pub results: Vec<(&'static Check, CheckResult)>,
+    pub checks: Vec<CheckResult>,
+}
+
+impl ScanResult {
+    pub fn new(checks: Vec<CheckResult>) -> Self {
+        Self { checks }
+    }
 }
 
 pub fn scan<F>(
@@ -61,15 +85,16 @@ where
         }
 
         on_check_complete();
-        (check, result)
+        CheckResult::new(check, result)
     };
 
-    let results = if context.parallel {
+    let checks = if context.parallel {
         context.checks.par_iter().map(run).collect()
     } else {
         context.checks.iter().map(run).collect()
     };
 
     tracing::info!("scan completed"); // TODO: add count of passed, failed, errors
-    ScanResult { results }
+
+    ScanResult::new(checks)
 }

@@ -1,9 +1,9 @@
 use crate::{
-    checks::{Check, CheckResult},
+    checks::{Check, CheckReturnedResult},
     system::System,
 };
 
-fn sip_enabled(system: &dyn System) -> CheckResult {
+fn sip_enabled(system: &dyn System) -> CheckReturnedResult {
     let result = system.command("/usr/bin/csrutil", &["status"])?;
 
     let output = String::from_utf8_lossy(&result.stdout);

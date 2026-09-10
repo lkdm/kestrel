@@ -1,9 +1,9 @@
 use crate::{
-    checks::{Check, CheckResult},
+    checks::{Check, CheckReturnedResult},
     system::System,
 };
 
-fn docker_rootless(system: &dyn System) -> CheckResult {
+fn docker_rootless(system: &dyn System) -> CheckReturnedResult {
     let result = match system.command("docker", &["info"]) {
         Ok(result) => result,
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
