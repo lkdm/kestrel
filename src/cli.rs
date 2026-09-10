@@ -16,14 +16,27 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub enum Commands {
+    /// lists checks available for your device
     #[command(name = "list")]
-    ListChecks,
+    ListChecks {
+        /// list only the check names, separated by space, so they can be copy+pasted after the `--checks` command
+        #[arg(long)]
+        names: bool,
+    },
 
+    /// scan your device
     Scan {
+        /// filters list of checks to scan
         #[arg(long = "checks", value_name = "CHECKS", num_args = 1..)]
         checks: Vec<String>,
 
-        #[arg(long, value_enum, default_value_t = OutputFormat::Human)]
+        /// output format for the result
+        #[arg(
+            long = "format",
+            alias = "output",
+            value_enum,
+            default_value_t = OutputFormat::Human
+        )]
         output: OutputFormat,
 
         /// disables loading spinner
@@ -126,6 +139,18 @@ pub fn print_checks(result: ListChecksResult) {
     for check in result.checks {
         println!("{}: {}", check.id, check.description);
     }
+}
+
+pub fn print_check_names(result: ListChecksResult) {
+    println!(
+        "{}",
+        result
+            .checks
+            .iter()
+            .map(|check| check.id)
+            .collect::<Vec<_>>()
+            .join(" ")
+    );
 }
 
 pub fn print_error(error: &AppError) {

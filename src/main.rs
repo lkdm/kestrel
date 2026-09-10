@@ -25,9 +25,14 @@ fn run() -> Result<(), AppError> {
     let system = SystemImpl;
 
     match cli.command {
-        Commands::ListChecks => {
+        Commands::ListChecks { names } => {
             let result = list_checks();
-            cli::print_checks(result);
+
+            if names {
+                cli::print_check_names(result);
+            } else {
+                cli::print_checks(result);
+            }
         }
 
         Commands::Scan {
