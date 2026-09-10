@@ -19,7 +19,7 @@ pub use windows::WindowsSystem as SystemImpl;
 pub use linux::LinuxSystem as SystemImpl;
 
 /// represents interaction with the host system
-pub trait System {
+pub trait System: Send + Sync {
     /// run a system command
     fn command(&self, program: &str, args: &[&str]) -> io::Result<CommandResult>;
 
