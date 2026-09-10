@@ -28,6 +28,8 @@ pub struct ScanResult {
 pub fn scan<F>(
     context: &ScanContext,
     system: &(dyn System + Sync),
+    // closure to be called when a check is completed
+    // we use this to inform the progress counter of completion
     on_check_complete: F,
 ) -> ScanResult
 where
