@@ -8,11 +8,14 @@ use clap::Parser;
 
 pub mod checks;
 pub mod cli;
+pub mod constants;
 pub mod error;
 pub mod list;
 pub mod scan;
 pub mod system;
 pub mod tracing;
+
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 fn main() {
     if let Err(error) = run() {

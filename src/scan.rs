@@ -1,8 +1,12 @@
+use std::time::Instant;
+
+use chrono::{DateTime, Utc};
 use rayon::iter::ParallelIterator;
 use serde::Serialize;
 
 use crate::{
     checks::{Check, CheckReturnedResult, Checks},
+    constants::VERSION,
     system::System,
 };
 
@@ -27,27 +31,58 @@ impl ScanContext {
 pub struct CheckResult {
     pub id: &'static str,
     pub description: &'static str,
-    pub result: Result<bool, String>,
+    pub result: CheckOutcome,
+}
+
+#[derive(Debug, Serialize)]
+pub enum CheckOutcome {
+    Passed,
+    Failed { recommendation: String },
+    Error(String),
 }
 
 impl CheckResult {
     pub fn new(check: &Check, result: CheckReturnedResult) -> Self {
+        let result = match result {
+            Ok(true) => CheckOutcome::Passed,
+            Ok(false) => CheckOutcome::Failed {
+                recommendation: check.recommendation.to_string(),
+            },
+            Err(error) => CheckOutcome::Error(error.to_string()),
+        };
+
         Self {
             id: check.id,
             description: check.description,
-            result: result.map_err(|error| error.to_string()),
+            result,
         }
     }
 }
 
 #[derive(Debug, Serialize)]
 pub struct ScanResult {
+    /// kesteral version
+    pub version: &'static str,
+    /// wall-clock time the scan began
+    pub timestamp: DateTime<Utc>,
+    /// monotonic elapsed time spent scanning
+    pub duration_ms: u64,
+    /// checks and their results
     pub checks: Vec<CheckResult>,
 }
 
 impl ScanResult {
-    pub fn new(checks: Vec<CheckResult>) -> Self {
-        Self { checks }
+    pub fn new(
+        checks: Vec<CheckResult>,
+        timestamp: Option<DateTime<Utc>>,
+        duration_ms: u64,
+    ) -> Self {
+        Self {
+            timestamp: timestamp.unwrap_or_else(Utc::now),
+            duration_ms,
+            checks,
+            version: VERSION,
+        }
     }
 }
 
@@ -59,6 +94,9 @@ pub fn scan<F>(
 where
     F: Fn() + Sync,
 {
+    let timestamp = Utc::now();
+    let start = Instant::now();
+
     tracing::info!(
         checks = context.checks.len(),
         parallel = context.parallel,
@@ -94,7 +132,9 @@ where
         context.checks.iter().map(run).collect()
     };
 
-    tracing::info!("scan completed"); // TODO: add count of passed, failed, errors
+    let duration_ms = start.elapsed().as_millis() as u64;
 
-    ScanResult::new(checks)
+    tracing::info!(duration_ms, "scan completed");
+
+    ScanResult::new(checks, Some(timestamp), duration_ms)
 }

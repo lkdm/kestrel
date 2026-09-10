@@ -4,13 +4,14 @@ use clap::{Parser, Subcommand, ValueEnum};
 use console::style;
 use indicatif::{ProgressBar, ProgressStyle};
 
+use crate::constants::VERSION;
 use crate::error::AppError;
 use crate::list::ListChecksResult;
-use crate::scan::ScanResult;
+use crate::scan::{CheckOutcome, ScanResult};
 
 #[derive(Debug, Parser)]
 #[command(name = "kestrel")]
-#[command(about = "scans your device to determine your security posture", long_about = None, version)]
+#[command(about = "scans your device to determine your security posture", long_about = None, version=VERSION)]
 pub struct Cli {
     // /// Path to the configuration file
     // /// CLI options are preferenced over config file
@@ -147,9 +148,9 @@ pub fn print_scan_human(result: ScanResult) {
 
     for check in result.checks {
         match &check.result {
-            Ok(true) => passed.push(check),
-            Ok(false) => failed.push(check),
-            Err(_) => errors.push(check),
+            CheckOutcome::Passed => passed.push(check),
+            CheckOutcome::Failed { .. } => failed.push(check),
+            CheckOutcome::Error(_) => errors.push(check),
         }
     }
 
@@ -165,7 +166,10 @@ pub fn print_scan_human(result: ScanResult) {
         println!("\n{}", style("FAIL").red().bold());
 
         for check in &failed {
-            println!("  {} {}", style("✗").red(), check.description);
+            if let CheckOutcome::Failed { recommendation } = &check.result {
+                println!("  {} {}", style("✗").red(), check.description);
+                println!("    → {}", recommendation);
+            }
         }
     }
 
@@ -173,9 +177,9 @@ pub fn print_scan_human(result: ScanResult) {
         println!("\n{}", style("ERROR").yellow().bold());
 
         for check in &errors {
-            let error = check.result.as_ref().unwrap_err();
-
-            println!("  {} {}: {}", style("!").yellow(), check.description, error);
+            if let CheckOutcome::Error(error) = &check.result {
+                println!("  {} {}: {}", style("!").yellow(), check.description, error);
+            }
         }
     }
 }
@@ -183,9 +187,15 @@ pub fn print_scan_human(result: ScanResult) {
 pub fn print_scan_simple(result: ScanResult) {
     for check in result.checks {
         match check.result {
-            Ok(true) => println!("PASS {}", check.id),
-            Ok(false) => println!("FAIL {}", check.id),
-            Err(error) => println!("ERROR {}: {}", check.id, error),
+            CheckOutcome::Passed => {
+                println!("PASS {}", check.id);
+            }
+            CheckOutcome::Failed { .. } => {
+                println!("FAIL {}", check.id);
+            }
+            CheckOutcome::Error(error) => {
+                println!("ERROR {}: {}", check.id, error);
+            }
         }
     }
 }

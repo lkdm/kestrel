@@ -12,5 +12,6 @@ fn gatekeeper_enabled(system: &dyn System) -> CheckReturnedResult {
 pub static GATEKEEPER_ENABLED: Check = Check {
     id: "macos-gatekeeper-enabled",
     description: "Gatekeeper assessments are enabled.",
+    recommendation: "Enable Gatekeeper assessments to allow macOS to verify applications before they run.",
     run: gatekeeper_enabled,
 };

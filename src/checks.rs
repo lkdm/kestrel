@@ -26,6 +26,8 @@ pub struct Check {
     pub id: &'static str,
     /// human-readable description
     pub description: &'static str,
+    /// reccomendation for remediation
+    pub recommendation: &'static str,
     /// function to run the check
     pub run: CheckFn,
 }

@@ -12,5 +12,6 @@ fn remote_login_disabled(system: &dyn System) -> CheckReturnedResult {
 pub static REMOTE_LOGIN_DISABLED: Check = Check {
     id: "macos-remote-login-disabled",
     description: "Remote Login is disabled.",
+    recommendation: "Disable Remote Login unless it is required.",
     run: remote_login_disabled,
 };
