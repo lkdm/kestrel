@@ -37,10 +37,20 @@ fn run() -> Result<(), AppError> {
             cli::print_checks(result);
         }
 
-        Commands::Scan { checks, output } => {
+        Commands::Scan {
+            checks,
+            output,
+            no_progress,
+        } => {
             let checks = Checks::select(&checks)?;
             let context = ScanContext::new(&checks);
-            let result = scan::scan(&context, &system);
+            let progress = cli::progress(checks.len(), !no_progress);
+
+            let result = scan::scan(&context, &system, || {
+                progress.inc(1);
+            });
+
+            progress.finish_and_clear();
 
             cli::print_scan(result, output);
         }

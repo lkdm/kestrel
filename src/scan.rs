@@ -25,12 +25,20 @@ pub struct ScanResult {
     pub results: Vec<(&'static Check, CheckResult)>,
 }
 
-pub fn scan(context: &ScanContext, system: &(dyn System + Sync)) -> ScanResult {
+pub fn scan<F>(
+    context: &ScanContext,
+    system: &(dyn System + Sync),
+    on_check_complete: F,
+) -> ScanResult
+where
+    F: Fn() + Sync,
+{
     let results = context
         .checks
         .par_iter()
         .map(|check| {
             let result = (check.run)(system);
+            on_check_complete();
             (*check, result)
         })
         .collect();

@@ -29,6 +29,10 @@ pub enum Commands {
 
         #[arg(long, value_enum, default_value_t = OutputFormat::Human)]
         output: OutputFormat,
+
+        /// disables loading spinner
+        #[arg(long)]
+        no_progress: bool,
     },
 }
 
@@ -47,8 +51,13 @@ pub fn print_scan(result: ScanResult, format: OutputFormat) {
     }
 }
 
-pub fn progress(len: usize) -> ProgressBar {
+pub fn progress(len: usize, enabled: bool) -> ProgressBar {
     let progress = ProgressBar::new(len as u64);
+
+    if !enabled {
+        progress.set_draw_target(indicatif::ProgressDrawTarget::hidden());
+        return progress;
+    }
 
     progress.set_style(
         ProgressStyle::with_template(
