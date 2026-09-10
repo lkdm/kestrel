@@ -1,4 +1,4 @@
-use rayon::iter::{ParallelBridge, ParallelIterator};
+use rayon::iter::ParallelIterator;
 
 use crate::{
     checks::{Check, CheckResult, Checks},

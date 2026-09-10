@@ -1,15 +1,10 @@
-use std::io;
-
 use clap::{Parser, Subcommand, ValueEnum};
 use console::style;
 use indicatif::{ProgressBar, ProgressStyle};
 
-use crate::checks::{CHECKS, Check};
-
-use crate::checks::Checks;
 use crate::error::AppError;
 use crate::list::ListChecksResult;
-use crate::scan::{ScanContext, ScanResult};
+use crate::scan::ScanResult;
 
 #[derive(Debug, Parser)]
 #[command(name = "kestrel")]
@@ -21,6 +16,7 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub enum Commands {
+    #[command(name = "list")]
     ListChecks,
 
     Scan {
