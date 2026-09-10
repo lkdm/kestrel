@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use clap::{Parser, Subcommand, ValueEnum};
 use console::style;
 use indicatif::{ProgressBar, ProgressStyle};
@@ -8,8 +10,12 @@ use crate::scan::ScanResult;
 
 #[derive(Debug, Parser)]
 #[command(name = "kestrel")]
-#[command(about = "scans your device to determine your security posture", long_about = None)]
+#[command(about = "scans your device to determine your security posture", long_about = None, version)]
 pub struct Cli {
+    // /// Path to the configuration file
+    // /// CLI options are preferenced over config file
+    // #[arg(long, env = "KESTREL_CONFIG")]
+    // pub config: Option<PathBuf>,
     #[command(subcommand)]
     pub command: Commands,
 }
@@ -19,15 +25,15 @@ pub enum Commands {
     /// lists checks available for your device
     #[command(name = "list")]
     ListChecks {
-        /// list only the check names, separated by space, so they can be copy+pasted after the `--checks` command
+        /// List only check names, separated by spaces for use with `--checks
         #[arg(long)]
         names: bool,
     },
 
     /// scan your device
     Scan {
-        /// filters list of checks to scan
-        #[arg(long = "checks", value_name = "CHECKS", num_args = 1..)]
+        /// checks to run; defaults to all checks
+        #[arg(long = "checks", value_name = "CHECK", num_args = 1..)]
         checks: Vec<String>,
 
         /// output format for the result
@@ -39,9 +45,37 @@ pub enum Commands {
         )]
         output: OutputFormat,
 
-        /// disables loading spinner
+        /// disable progress indicator
         #[arg(long)]
         no_progress: bool,
+
+        /// disable parallelisation
+        #[arg(long)]
+        no_parallel: bool,
+        // /// if a previous scan failed, this will retry the failure or error checks
+        // #[arg(long, alias = "continue")]
+        // resume: bool,
+
+        // /// if a previous scan failed, this will assist the user with remediatory steps
+        // #[arg(long, alias = "remediate")]
+        // remediate: bool,
+    },
+    Config {
+        #[command(subcommand)]
+        command: ConfigCommands,
+    },
+}
+
+#[derive(Debug, Subcommand)]
+pub enum ConfigCommands {
+    /// Print the path Kestrel uses for its configuration
+    Path,
+
+    /// Create a default configuration file
+    Init {
+        /// Path to write the configuration file
+        #[arg(long)]
+        path: Option<PathBuf>,
     },
 }
 

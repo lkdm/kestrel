@@ -39,9 +39,10 @@ fn run() -> Result<(), AppError> {
             checks,
             output,
             no_progress,
+            no_parallel,
         } => {
             let checks = Checks::select(&checks)?;
-            let context = ScanContext::new(&checks);
+            let context = ScanContext::new(&checks, !no_parallel);
             let progress = cli::progress(checks.len(), !no_progress);
 
             let result = scan::scan(&context, &system, || {
@@ -52,6 +53,8 @@ fn run() -> Result<(), AppError> {
 
             cli::print_scan(result, output);
         }
+
+        Commands::Config { command } => {}
     }
 
     Ok(())

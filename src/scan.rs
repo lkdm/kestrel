@@ -10,12 +10,14 @@ use crate::{
 pub struct ScanContext {
     /// subset of checks to be scanned
     pub checks: Checks,
+    pub parallel: bool,
 }
 
 impl ScanContext {
-    pub fn new(checks: &Checks) -> Self {
+    pub fn new(checks: &Checks, parallel: bool) -> Self {
         Self {
             checks: checks.clone(),
+            parallel,
         }
     }
 }
@@ -28,22 +30,22 @@ pub struct ScanResult {
 pub fn scan<F>(
     context: &ScanContext,
     system: &(dyn System + Sync),
-    // closure to be called when a check is completed
-    // we use this to inform the progress counter of completion
     on_check_complete: F,
 ) -> ScanResult
 where
     F: Fn() + Sync,
 {
-    let results = context
-        .checks
-        .par_iter()
-        .map(|check| {
-            let result = (check.run)(system);
-            on_check_complete();
-            (*check, result)
-        })
-        .collect();
+    let run = |check: &'static Check| {
+        let result = (check.run)(system);
+        on_check_complete();
+        (check, result)
+    };
+
+    let results = if context.parallel {
+        context.checks.par_iter().map(run).collect()
+    } else {
+        context.checks.iter().map(run).collect()
+    };
 
     ScanResult { results }
 }

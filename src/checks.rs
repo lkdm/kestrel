@@ -13,7 +13,7 @@ pub mod linux;
 #[cfg(target_os = "macos")]
 pub use macos::CHECKS;
 
-use rayon::iter::IntoParallelRefIterator;
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 #[cfg(target_os = "windows")]
 pub use windows::CHECKS;
 
@@ -77,8 +77,8 @@ impl Checks {
         self.0.iter().copied()
     }
 
-    pub fn par_iter(&self) -> rayon::slice::Iter<'_, &'static Check> {
-        self.0.par_iter()
+    pub fn par_iter(&self) -> impl ParallelIterator<Item = &'static Check> + '_ {
+        self.0.par_iter().copied()
     }
 
     pub fn len(&self) -> usize {
