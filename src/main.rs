@@ -15,6 +15,16 @@ pub mod scan;
 pub mod system;
 pub mod tracing;
 
+// TODO: clean up UI
+// TODO: add more useful mac os checks
+// TODO: add configuration
+// TODO: add logging to log file
+// TODO: add machine information (unique identifier, OS, host info)
+// TODO: dump incomplete scans to /tmp/kestrel/<scan-id>.bin and recover using --continue.
+// TODO: remediation_url links to Apple support
+// TODO: egui application (not open-source)
+// TODO: linux, windows checks
+
 fn main() {
     if let Err(error) = run() {
         cli::print_error(&error);
