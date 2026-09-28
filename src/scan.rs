@@ -59,6 +59,27 @@ impl CheckResult {
     }
 }
 
+#[derive(Debug, Default, Serialize)]
+pub struct ScanSummary {
+    pub passed: usize,
+    pub failed: usize,
+    pub errors: usize,
+}
+
+impl ScanSummary {
+    pub fn from_checks(checks: &[CheckResult]) -> Self {
+        checks.iter().fold(Self::default(), |mut summary, check| {
+            match check.result {
+                CheckOutcome::Passed => summary.passed += 1,
+                CheckOutcome::Failed { .. } => summary.failed += 1,
+                CheckOutcome::Error(_) => summary.errors += 1,
+            }
+
+            summary
+        })
+    }
+}
+
 #[derive(Debug, Serialize)]
 pub struct ScanResult {
     /// kesteral version
@@ -67,6 +88,8 @@ pub struct ScanResult {
     pub timestamp: DateTime<Utc>,
     /// monotonic elapsed time spent scanning
     pub duration_ms: u64,
+    /// summary of check results
+    pub summary: ScanSummary,
     /// checks and their results
     pub checks: Vec<CheckResult>,
 }
@@ -77,10 +100,12 @@ impl ScanResult {
         timestamp: Option<DateTime<Utc>>,
         duration_ms: u64,
     ) -> Self {
+        let summary = ScanSummary::from_checks(&checks);
         Self {
             timestamp: timestamp.unwrap_or_else(Utc::now),
             duration_ms,
             checks,
+            summary,
             version: VERSION,
         }
     }
