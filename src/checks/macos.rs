@@ -6,6 +6,7 @@ use crate::checks::{
         firewall_enabled::FIREWALL_ENABLED, gatekeeper_enabled::GATEKEEPER_ENABLED,
         homebrew_updated::HOMEBREW_UPDATED, macos_updated::MACOS_UPDATED,
         remote_login_disabled::REMOTE_LOGIN_DISABLED, sip_enabled::SIP_ENABLED,
+        std_user::STANDARD_USER,
     },
 };
 
@@ -19,8 +20,10 @@ pub mod homebrew_updated;
 pub mod macos_updated;
 pub mod remote_login_disabled;
 pub mod sip_enabled;
+pub mod std_user;
 
 pub static CHECKS: &[Check] = &[
+    STANDARD_USER,
     AUTOMATIC_LOGIN_DISABLED,
     FIREWALL_ENABLED,
     DOCKER_ROOTLESS,
