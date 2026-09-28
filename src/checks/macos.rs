@@ -1,6 +1,7 @@
 use crate::checks::{
     Check,
     macos::{
+        admin_password_for_preferences::ADMIN_PASSWORD_FOR_PREFERENCES,
         automatic_login_off::AUTOMATIC_LOGIN_DISABLED, docker_rootless::DOCKER_ROOTLESS,
         filevault_enabled::FILEVAULT_ENABLED, firewall_block_all::FIREWALL_BLOCK_ALL,
         firewall_enabled::FIREWALL_ENABLED, gatekeeper_enabled::GATEKEEPER_ENABLED,
@@ -9,8 +10,10 @@ use crate::checks::{
         remote_login_disabled::REMOTE_LOGIN_DISABLED, sip_enabled::SIP_ENABLED,
         std_user::STANDARD_USER,
     },
+    shared::ssh_key_encryption::SSH_KEYS_STRONG,
 };
 
+pub mod admin_password_for_preferences;
 pub mod automatic_login_off;
 pub mod docker_rootless;
 pub mod filevault_enabled;
@@ -25,6 +28,7 @@ pub mod sip_enabled;
 pub mod std_user;
 
 pub static CHECKS: &[Check] = &[
+    ADMIN_PASSWORD_FOR_PREFERENCES,
     PASSWORD_AFTER_INACTIVITY,
     STANDARD_USER,
     AUTOMATIC_LOGIN_DISABLED,
@@ -37,4 +41,5 @@ pub static CHECKS: &[Check] = &[
     GATEKEEPER_ENABLED,
     FILEVAULT_ENABLED,
     FIREWALL_BLOCK_ALL,
+    SSH_KEYS_STRONG,
 ];
