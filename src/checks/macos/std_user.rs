@@ -12,7 +12,7 @@ fn standard_user(system: &dyn System) -> CheckReturnedResult {
 }
 
 pub static STANDARD_USER: Check = Check {
-    id: "macos-standard-user",
+    id: "standard-user",
     description: "The daily user account is a Standard user rather than an Administrator.",
     recommendation: "Use a Standard user account for daily activities instead of an Administrator account.",
     run: standard_user,

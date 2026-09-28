@@ -16,7 +16,7 @@ fn homebrew_updated(system: &dyn System) -> CheckReturnedResult {
 }
 
 pub static HOMEBREW_UPDATED: Check = Check {
-    id: "macos-homebrew-updated",
+    id: "homebrew-updated",
     description: "All Homebrew packages are up to date.",
     recommendation: "Update your Homebrew packages.",
     run: homebrew_updated,

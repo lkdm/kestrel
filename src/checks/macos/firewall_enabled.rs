@@ -13,7 +13,7 @@ fn firewall_enabled(system: &dyn System) -> CheckReturnedResult {
 }
 
 pub static FIREWALL_ENABLED: Check = Check {
-    id: "macos-firewall-enabled",
+    id: "firewall-enabled",
     description: "The macOS firewall is enabled.",
     recommendation: "Enable the macOS firewall in System Settings.",
     run: firewall_enabled,

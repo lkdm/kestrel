@@ -25,7 +25,7 @@ fn automatic_login_disabled(system: &dyn System) -> CheckReturnedResult {
 }
 
 pub static AUTOMATIC_LOGIN_DISABLED: Check = Check {
-    id: "macos-automatic-login-disabled",
+    id: "automatic-login-disabled",
     description: "Automatic login is disabled.",
     recommendation: "Disable automatic login to require authentication when logging in to macOS.",
     run: automatic_login_disabled,
