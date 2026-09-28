@@ -7,10 +7,10 @@ pub static STANDARD_USER: Check = Check {
     id: "standard-user",
     description: "The daily user account is a Standard user rather than an Administrator.",
     recommendation: "Use a Standard user account for daily activities instead of an Administrator account.",
-    run: user_in_admin_group,
+    run: is_standard_user,
 };
 
-fn user_in_admin_group(system: &dyn System) -> CheckReturnedResult {
+fn is_standard_user(system: &dyn System) -> CheckReturnedResult {
     let result = system.command("/usr/bin/id", &["-Gn"])?;
 
     if !result.success() {
@@ -36,8 +36,7 @@ mod tests {
     fn standard_user_is_standard() {
         let system = command_output("staff everyone");
 
-        let passed =
-            user_in_admin_group(&system).expect("standard_user should execute successfully");
+        let passed = is_standard_user(&system).expect("standard_user should execute successfully");
 
         assert!(passed, "expected standard user without admin group");
     }
@@ -46,8 +45,7 @@ mod tests {
     fn standard_user_is_admin() {
         let system = command_output("staff admin everyone");
 
-        let passed =
-            user_in_admin_group(&system).expect("standard_user should execute successfully");
+        let passed = is_standard_user(&system).expect("standard_user should execute successfully");
 
         assert!(!passed, "expected administrator with admin group to fail");
     }
@@ -56,8 +54,7 @@ mod tests {
     fn standard_user_does_not_match_similar_group_name() {
         let system = command_output("staff adminusers everyone");
 
-        let passed =
-            user_in_admin_group(&system).expect("standard_user should execute successfully");
+        let passed = is_standard_user(&system).expect("standard_user should execute successfully");
 
         assert!(
             passed,
@@ -77,7 +74,7 @@ mod tests {
             )
         };
 
-        let result = user_in_admin_group(&system);
+        let result = is_standard_user(&system);
 
         assert!(
             result.is_err(),
@@ -89,8 +86,7 @@ mod tests {
     fn standard_user_with_empty_group_output_is_standard() {
         let system = command_output("");
 
-        let passed =
-            user_in_admin_group(&system).expect("standard_user should execute successfully");
+        let passed = is_standard_user(&system).expect("standard_user should execute successfully");
 
         assert!(passed);
     }
