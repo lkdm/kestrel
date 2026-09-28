@@ -17,6 +17,7 @@ pub mod tracing;
 
 // TODO: clean up UI
 // TODO: add more useful mac os checks
+// TODO: add testing
 // TODO: add configuration
 // TODO: add logging to log file
 // TODO: add machine information (unique identifier, OS, host info)

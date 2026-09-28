@@ -2,20 +2,18 @@ use crate::checks::{
     Check,
     macos::{
         admin_password_for_preferences::ADMIN_PASSWORD_FOR_PREFERENCES,
-        automatic_login_off::AUTOMATIC_LOGIN_DISABLED, docker_rootless::DOCKER_ROOTLESS,
-        filevault_enabled::FILEVAULT_ENABLED, firewall_block_all::FIREWALL_BLOCK_ALL,
-        firewall_enabled::FIREWALL_ENABLED, gatekeeper_enabled::GATEKEEPER_ENABLED,
-        homebrew_updated::HOMEBREW_UPDATED, macos_updated::MACOS_UPDATED,
-        password_after_inactivity::PASSWORD_AFTER_INACTIVITY,
+        automatic_login_off::AUTOMATIC_LOGIN_DISABLED, filevault_enabled::FILEVAULT_ENABLED,
+        firewall_block_all::FIREWALL_BLOCK_ALL, firewall_enabled::FIREWALL_ENABLED,
+        gatekeeper_enabled::GATEKEEPER_ENABLED, homebrew_updated::HOMEBREW_UPDATED,
+        macos_updated::MACOS_UPDATED, password_after_inactivity::PASSWORD_AFTER_INACTIVITY,
         remote_login_disabled::REMOTE_LOGIN_DISABLED, sip_enabled::SIP_ENABLED,
         std_user::STANDARD_USER,
     },
-    shared::ssh_key_encryption::SSH_KEYS_STRONG,
+    shared::{docker_rootless::DOCKER_ROOTLESS, ssh_key_encryption::SSH_KEYS_STRONG},
 };
 
 pub mod admin_password_for_preferences;
 pub mod automatic_login_off;
-pub mod docker_rootless;
 pub mod filevault_enabled;
 pub mod firewall_block_all;
 pub mod firewall_enabled;

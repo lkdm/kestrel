@@ -27,7 +27,7 @@ fn docker_rootless(system: &dyn System) -> CheckReturnedResult {
 }
 
 pub static DOCKER_ROOTLESS: Check = Check {
-    id: "macos-docker-rootless",
+    id: "docker-rootless",
     description: "Docker, if installed, is running in rootless mode.",
     recommendation: "Configure Docker to run in rootless mode.",
     run: docker_rootless,
