@@ -18,6 +18,9 @@ pub use windows::WindowsSystem as SystemImpl;
 #[cfg(target_os = "linux")]
 pub use linux::LinuxSystem as SystemImpl;
 
+#[cfg(test)]
+pub mod test;
+
 /// represents interaction with the host system
 pub trait System: Send + Sync {
     /// run a system command
