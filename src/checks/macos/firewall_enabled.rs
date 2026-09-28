@@ -1,16 +1,7 @@
 use crate::{
     checks::{Check, CheckReturnedResult},
-    system::System,
+    system::{CommandResultExt as _, System, common::command::CommandRequest},
 };
-
-fn firewall_enabled(system: &dyn System) -> CheckReturnedResult {
-    let result = system.command(
-        "/usr/libexec/ApplicationFirewall/socketfilterfw",
-        &["--getglobalstate"],
-    )?;
-
-    Ok(String::from_utf8_lossy(&result.stdout).contains("Firewall is enabled"))
-}
 
 pub static FIREWALL_ENABLED: Check = Check {
     id: "firewall-enabled",
@@ -18,3 +9,14 @@ pub static FIREWALL_ENABLED: Check = Check {
     recommendation: "Enable the macOS firewall in System Settings.",
     run: firewall_enabled,
 };
+
+fn firewall_enabled(system: &dyn System) -> CheckReturnedResult {
+    let result = system
+        .command(&CommandRequest::new(
+            "/usr/libexec/ApplicationFirewall/socketfilterfw",
+            &["--getglobalstate"],
+        ))
+        .ensure_success()?;
+
+    Ok(result.stdout_utf8().contains("Firewall is enabled"))
+}

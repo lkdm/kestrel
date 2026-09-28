@@ -2,21 +2,7 @@ pub mod command;
 use std::{
     fs, io,
     path::{Path, PathBuf},
-    process::Command,
 };
-
-use command::CommandResult;
-
-/// run a system command
-pub fn command(program: &str, args: &[&str]) -> io::Result<CommandResult> {
-    let output = Command::new(program).args(args).output()?;
-
-    Ok(CommandResult {
-        status: output.status,
-        stdout: output.stdout,
-        stderr: output.stderr,
-    })
-}
 
 /// check if the path exists
 pub fn path_exists(path: &Path) -> io::Result<bool> {

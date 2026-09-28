@@ -1,4 +1,4 @@
-use crate::system::System;
+use crate::system::{System, SystemError};
 use std::io;
 
 #[cfg(target_os = "macos")]
@@ -16,11 +16,20 @@ pub mod shared;
 pub use macos::CHECKS;
 
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
+use thiserror::Error;
 #[cfg(target_os = "windows")]
 pub use windows::CHECKS;
 
 #[cfg(target_os = "linux")]
 pub use linux::CHECKS;
+
+#[derive(Debug, Error)]
+pub enum CheckError {
+    #[error("system error: {0}")]
+    System(#[from] SystemError),
+}
+
+pub type Result<T> = std::result::Result<T, CheckError>;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Check {
@@ -37,8 +46,7 @@ pub struct Check {
 /// runs the check
 pub type CheckFn = fn(&dyn System) -> CheckReturnedResult;
 
-/// answers: did the check pass?
-pub type CheckReturnedResult = io::Result<bool>;
+pub type CheckReturnedResult = Result<bool>;
 
 #[derive(Debug, thiserror::Error)]
 pub enum ChecksError {
@@ -55,7 +63,7 @@ impl Checks {
         Self(CHECKS.iter().collect())
     }
 
-    pub fn select(selected: &[String]) -> Result<Self, ChecksError> {
+    pub fn select(selected: &[String]) -> std::result::Result<Self, ChecksError> {
         if selected.is_empty() {
             return Ok(Self::all());
         }

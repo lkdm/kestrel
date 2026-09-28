@@ -1,28 +1,7 @@
 use crate::{
     checks::{Check, CheckReturnedResult},
-    system::System,
+    system::{CommandResultExt as _, System, common::command::CommandRequest},
 };
-
-fn automatic_login_disabled(system: &dyn System) -> CheckReturnedResult {
-    let result = system.command(
-        "/usr/bin/defaults",
-        &[
-            "read",
-            "/Library/Preferences/com.apple.loginwindow",
-            "autoLoginUser",
-        ],
-    );
-
-    match result {
-        Ok(result) => {
-            let output = String::from_utf8_lossy(&result.stdout);
-            Ok(output.trim().is_empty())
-        }
-        // `defaults read` exits non-zero when the key doesn't exist,
-        // which means automatic login is not configured.
-        Err(_) => Ok(true),
-    }
-}
 
 pub static AUTOMATIC_LOGIN_DISABLED: Check = Check {
     id: "automatic-login-disabled",
@@ -30,3 +9,21 @@ pub static AUTOMATIC_LOGIN_DISABLED: Check = Check {
     recommendation: "Disable automatic login to require authentication when logging in to macOS.",
     run: automatic_login_disabled,
 };
+
+/// checks whether automatic login is disabled
+///
+/// `defaults read` exits non-zero when the key doesn't exist, meaning automatic login is not configured
+fn automatic_login_disabled(system: &dyn System) -> CheckReturnedResult {
+    let result = system
+        .command(&CommandRequest::new(
+            "/usr/bin/defaults",
+            &[
+                "read",
+                "/Library/Preferences/com.apple.loginwindow",
+                "autoLoginUser",
+            ],
+        ))
+        .ensure_success()?;
+
+    Ok(result.stdout_utf8().trim().is_empty())
+}

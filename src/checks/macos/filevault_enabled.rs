@@ -1,13 +1,7 @@
 use crate::{
     checks::{Check, CheckReturnedResult},
-    system::System,
+    system::{CommandResultExt as _, System, common::command::CommandRequest},
 };
-
-fn filevault_enabled(system: &dyn System) -> CheckReturnedResult {
-    let result = system.command("/usr/bin/fdesetup", &["status"])?;
-
-    Ok(String::from_utf8_lossy(&result.stdout).contains("FileVault is On"))
-}
 
 pub static FILEVAULT_ENABLED: Check = Check {
     id: "filevault-enabled",
@@ -15,3 +9,11 @@ pub static FILEVAULT_ENABLED: Check = Check {
     recommendation: "Enable FileVault to encrypt the contents of this Mac.",
     run: filevault_enabled,
 };
+
+fn filevault_enabled(system: &dyn System) -> CheckReturnedResult {
+    let result = system
+        .command(&CommandRequest::new("/usr/bin/fdesetup", &["status"]))
+        .ensure_success()?;
+
+    Ok(result.stdout_utf8().contains("FileVault is On"))
+}

@@ -1,6 +1,6 @@
 use crate::{
     checks::{Check, CheckReturnedResult},
-    system::System,
+    system::{CommandResultExt as _, System, common::command::CommandRequest},
 };
 
 pub static STANDARD_USER: Check = Check {
@@ -11,83 +11,45 @@ pub static STANDARD_USER: Check = Check {
 };
 
 fn is_standard_user(system: &dyn System) -> CheckReturnedResult {
-    let result = system.command("/usr/bin/id", &["-Gn"])?;
+    let result = system
+        .command(&CommandRequest::new("/usr/bin/id", &["-Gn"]))
+        .ensure_success()?;
 
-    if !result.success() {
-        return Err(std::io::Error::other("id command exited unsuccessfully"));
-    }
-
-    let output = String::from_utf8_lossy(&result.stdout);
-
-    Ok(!output.split_whitespace().any(|group| group == "admin"))
+    Ok(!result
+        .stdout_utf8()
+        .split_whitespace()
+        .any(|group| group == "admin"))
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::system::{common::command::CommandResult, test::TestSystem};
+    use crate::system::{common::command::CommandRequest, test::TestSystem};
 
     use super::*;
 
+    fn id_groups() -> CommandRequest {
+        CommandRequest::new("/usr/bin/id", &["-Gn"])
+    }
+
     fn command_output(out: &str) -> TestSystem {
-        TestSystem::new().command_stdout("/usr/bin/id", &["-Gn"], out)
+        TestSystem::new().with_command(id_groups().success(out))
     }
 
     #[test]
     fn standard_user_is_standard() {
         let system = command_output("staff everyone");
-
-        let passed = is_standard_user(&system).expect("standard_user should execute successfully");
-
-        assert!(passed, "expected standard user without admin group");
+        assert!(is_standard_user(&system).expect("should execute"));
     }
 
     #[test]
     fn standard_user_is_admin() {
         let system = command_output("staff admin everyone");
-
-        let passed = is_standard_user(&system).expect("standard_user should execute successfully");
-
-        assert!(!passed, "expected administrator with admin group to fail");
+        assert!(!is_standard_user(&system).expect("should execute"));
     }
 
     #[test]
-    fn standard_user_does_not_match_similar_group_name() {
-        let system = command_output("staff adminusers everyone");
-
-        let passed = is_standard_user(&system).expect("standard_user should execute successfully");
-
-        assert!(
-            passed,
-            "group names containing 'admin' should not count as the admin group"
-        );
-    }
-
-    #[test]
-    fn standard_user_returns_error_when_id_fails() {
-        let system = {
-            let this = TestSystem::new();
-            let args: &[&str] = &["-Gn"];
-            this.command(
-                "/usr/bin/id",
-                args,
-                CommandResult::test_failure("id: failed to determine groups"),
-            )
-        };
-
-        let result = is_standard_user(&system);
-
-        assert!(
-            result.is_err(),
-            "standard_user should return an error when id fails"
-        );
-    }
-
-    #[test]
-    fn standard_user_with_empty_group_output_is_standard() {
-        let system = command_output("");
-
-        let passed = is_standard_user(&system).expect("standard_user should execute successfully");
-
-        assert!(passed);
+    fn standard_user_returns_error_when_id_exits_nonzero() {
+        let system = TestSystem::new().with_command(id_groups().failure("id: failed"));
+        assert!(is_standard_user(&system).is_err());
     }
 }

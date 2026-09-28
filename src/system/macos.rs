@@ -1,27 +1,30 @@
 use std::{
     io,
     path::{Path, PathBuf},
+    process::Command,
 };
 
-use super::{CommandResult, System, common};
+use crate::system::{self, Result, common::command::CommandRequest};
+
+use super::{CommandOutput, System, common};
 
 #[derive(Debug, Default)]
 pub struct MacOSSystem;
 
 impl System for MacOSSystem {
-    fn command(&self, program: &str, args: &[&str]) -> io::Result<CommandResult> {
-        common::command(program, args)
+    fn command(&self, request: &CommandRequest) -> Result<CommandOutput> {
+        Ok(request.run()?)
     }
 
-    fn path_exists(&self, path: &Path) -> io::Result<bool> {
-        common::path_exists(path)
+    fn path_exists(&self, path: &Path) -> Result<bool> {
+        Ok(common::path_exists(path)?)
     }
 
-    fn read_directory(&self, path: &Path) -> io::Result<Vec<PathBuf>> {
-        common::read_directory(path)
+    fn read_directory(&self, path: &Path) -> Result<Vec<PathBuf>> {
+        Ok(common::read_directory(path)?)
     }
 
-    fn read_binary(&self, path: &Path) -> io::Result<Vec<u8>> {
-        common::read_binary(path)
+    fn read_binary(&self, path: &Path) -> Result<Vec<u8>> {
+        Ok(common::read_binary(path)?)
     }
 }

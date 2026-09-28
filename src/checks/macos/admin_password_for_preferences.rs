@@ -45,16 +45,19 @@ fn admin_password_for_preferences(system: &dyn System) -> CheckReturnedResult {
 
 #[cfg(test)]
 mod tests {
-    use crate::system::{common::command::CommandOutput, test::TestSystem};
+    use crate::system::test::{CommandKey, TestSystem};
 
     use super::*;
 
-    fn command_output(out: &str) -> TestSystem {
-        TestSystem::new().command_stdout(
+    fn lookup_preferences_lock() -> CommandKey {
+        CommandKey::new(
             "/usr/bin/security",
             &["authorizationdb", "read", "system.preferences"],
-            out,
         )
+    }
+
+    fn command_output(stdout: &str) -> TestSystem {
+        TestSystem::new().with_command(lookup_preferences_lock().success(stdout))
     }
 
     #[test]
@@ -236,22 +239,13 @@ mod tests {
 
     #[test]
     fn check_propagates_command_error() {
-        let system = {
-            let this = TestSystem::new();
-            let args: &[&str] = &["authorizationdb", "read", "system.preferences"];
-
-            this.command(
-                "/usr/bin/security",
-                args,
-                CommandOutput::test_failure("security: failed to read authorization database"),
-            )
-        };
+        // No command registered — TestSystem returns an error rather than
+        // an `Ok(CommandOutput)`, exercising the `?` in
+        // admin_password_for_preferences.
+        let system = TestSystem::new();
 
         let result = admin_password_for_preferences(&system);
 
-        assert!(
-            result.is_err(),
-            "expected command failure to return an error"
-        );
+        assert!(result.is_err(), "expected command error to propagate");
     }
 }
