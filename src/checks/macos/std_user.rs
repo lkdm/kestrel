@@ -28,9 +28,13 @@ mod tests {
 
     use super::*;
 
+    fn command_output(out: &str) -> TestSystem {
+        TestSystem::new().command_stdout("/usr/bin/id", &["-Gn"], out)
+    }
+
     #[test]
     fn standard_user_is_standard() {
-        let system = TestSystem::new().command_stdout("/usr/bin/id", &["-Gn"], "staff everyone");
+        let system = command_output("staff everyone");
 
         let passed =
             user_in_admin_group(&system).expect("standard_user should execute successfully");
@@ -40,8 +44,7 @@ mod tests {
 
     #[test]
     fn standard_user_is_admin() {
-        let system =
-            TestSystem::new().command_stdout("/usr/bin/id", &["-Gn"], "staff admin everyone");
+        let system = command_output("staff admin everyone");
 
         let passed =
             user_in_admin_group(&system).expect("standard_user should execute successfully");
@@ -51,8 +54,7 @@ mod tests {
 
     #[test]
     fn standard_user_does_not_match_similar_group_name() {
-        let system =
-            TestSystem::new().command_stdout("/usr/bin/id", &["-Gn"], "staff adminusers everyone");
+        let system = command_output("staff adminusers everyone");
 
         let passed =
             user_in_admin_group(&system).expect("standard_user should execute successfully");
@@ -85,7 +87,7 @@ mod tests {
 
     #[test]
     fn standard_user_with_empty_group_output_is_standard() {
-        let system = TestSystem::new().command_stdout("/usr/bin/id", &["-Gn"], "");
+        let system = command_output("");
 
         let passed =
             user_in_admin_group(&system).expect("standard_user should execute successfully");
