@@ -7,7 +7,7 @@ use crate::{
 };
 
 pub static DOCKER_ROOTLESS: Check = Check {
-    id: "docker-rootless",
+    name: "docker-rootless",
     description: "Docker, if installed, is running in rootless mode.",
     recommendation: "Configure Docker to run in rootless mode.",
     run: docker_rootless,

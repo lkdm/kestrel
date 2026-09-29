@@ -29,7 +29,7 @@ impl ScanContext {
 
 #[derive(Debug, Serialize)]
 pub struct CheckResult {
-    pub id: &'static str,
+    pub name: &'static str,
     pub description: &'static str,
     pub result: CheckOutcome,
 }
@@ -52,7 +52,7 @@ impl CheckResult {
         };
 
         Self {
-            id: check.id,
+            name: check.name,
             description: check.description,
             result,
         }
@@ -128,19 +128,19 @@ where
         "starting scan"
     );
     let run = |check: &'static Check| {
-        tracing::info!(check = check.id, "running check");
+        tracing::info!(check = check.name, "running check");
         let result = (check.run)(system);
 
         match &result {
             Ok(true) => {
-                tracing::info!(check = check.id, "check passed");
+                tracing::info!(check = check.name, "check passed");
             }
             Ok(false) => {
-                tracing::info!(check = check.id, "check failed");
+                tracing::info!(check = check.name, "check failed");
             }
             Err(error) => {
                 tracing::error!(
-                    check = check.id,
+                    check = check.name,
                     error = %error,
                     "check encountered an error"
                 );

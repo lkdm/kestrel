@@ -4,7 +4,7 @@ use crate::{
 };
 
 pub static SIP_ENABLED: Check = Check {
-    id: "sip-enabled",
+    name: "sip-enabled",
     description: "System Integrity Protection is enabled.",
     recommendation: "Enable System Integrity Protection to protect critical macOS system files and settings.",
     run: sip_enabled,

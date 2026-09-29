@@ -4,7 +4,7 @@ use crate::{
 };
 
 pub static MACOS_UPDATED: Check = Check {
-    id: "macos-updated",
+    name: "macos-updated",
     description: "macOS is up to date.",
     recommendation: "Install the latest available macOS updates.",
     run: macos_updated,

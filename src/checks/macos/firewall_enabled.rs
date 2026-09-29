@@ -4,7 +4,7 @@ use crate::{
 };
 
 pub static FIREWALL_ENABLED: Check = Check {
-    id: "firewall-enabled",
+    name: "firewall-enabled",
     description: "The macOS firewall is enabled.",
     recommendation: "Enable the macOS firewall in System Settings.",
     run: firewall_enabled,

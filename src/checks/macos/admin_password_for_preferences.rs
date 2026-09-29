@@ -4,7 +4,7 @@ use crate::{
 };
 
 pub static ADMIN_PASSWORD_FOR_PREFERENCES: Check = Check {
-    id: "password-modify-preferences",
+    name: "password-modify-preferences",
     description: "An administrator password is required to modify system-wide preferences.",
     recommendation: "Require an administrator password to modify system-wide preferences.",
     run: admin_password_for_preferences,

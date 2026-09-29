@@ -4,7 +4,7 @@ use crate::{
 };
 
 pub static FIREWALL_BLOCK_ALL: Check = Check {
-    id: "firewall-block-incoming",
+    name: "firewall-block-incoming",
     description: "The macOS firewall is configured to block all incoming connections.",
     recommendation: "Enable Block All Incoming Connections in the macOS firewall settings.",
     run: firewall_block_all,

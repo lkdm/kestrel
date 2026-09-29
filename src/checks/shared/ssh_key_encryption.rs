@@ -6,7 +6,7 @@ use crate::{
 };
 
 pub static SSH_KEYS_STRONG: Check = Check {
-    id: "ssh-keys-strong",
+    name: "ssh-keys-strong",
     description: "SSH private keys use sufficiently strong cryptographic algorithms and key sizes.",
     recommendation: "Use RSA keys of at least 2048 bits (4096 recommended), ECDSA P-521, or Ed25519. Do not use DSA keys.",
     run: ssh_keys_strong,

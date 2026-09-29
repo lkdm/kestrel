@@ -7,7 +7,7 @@ use crate::{
 };
 
 pub static PASSWORD_AFTER_INACTIVITY: Check = Check {
-    id: "password-after-inactivity",
+    name: "password-after-inactivity",
     description: "A password is required immediately after inactivity.",
     recommendation: "Require a password immediately when the screen saver starts.",
     run: password_after_inactivity,

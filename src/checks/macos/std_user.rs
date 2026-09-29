@@ -4,7 +4,7 @@ use crate::{
 };
 
 pub static STANDARD_USER: Check = Check {
-    id: "standard-user",
+    name: "standard-user",
     description: "The daily user account is a Standard user rather than an Administrator.",
     recommendation: "Use a Standard user account for daily activities instead of an Administrator account.",
     run: is_standard_user,

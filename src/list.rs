@@ -10,7 +10,7 @@ pub struct ListChecksResult {
 impl Display for ListChecksResult {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         for check in self.checks {
-            writeln!(f, "{}  {}", check.id, check.description)?;
+            writeln!(f, "{}  {}", check.name, check.description)?;
         }
         Ok(())
     }

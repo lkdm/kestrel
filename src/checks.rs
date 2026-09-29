@@ -34,7 +34,7 @@ pub type Result<T> = std::result::Result<T, CheckError>;
 #[derive(Debug, Clone, Copy)]
 pub struct Check {
     /// unique check identifier
-    pub id: &'static str,
+    pub name: &'static str,
     /// human-readable description
     pub description: &'static str,
     /// reccomendation for remediation
@@ -72,7 +72,7 @@ impl Checks {
         let mut unknown = Vec::new();
 
         for id in selected {
-            match CHECKS.iter().find(|check| check.id == id) {
+            match CHECKS.iter().find(|check| check.name == id) {
                 Some(check) => checks.push(check),
                 None => unknown.push(id.clone()),
             }

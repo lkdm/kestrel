@@ -7,7 +7,7 @@ use crate::{
 };
 
 pub static HOMEBREW_UPDATED: Check = Check {
-    id: "homebrew-updated",
+    name: "homebrew-updated",
     description: "All Homebrew packages are up to date.",
     recommendation: "Update your Homebrew packages.",
     run: homebrew_updated,

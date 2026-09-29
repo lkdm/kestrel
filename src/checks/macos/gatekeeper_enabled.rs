@@ -4,7 +4,7 @@ use crate::{
 };
 
 pub static GATEKEEPER_ENABLED: Check = Check {
-    id: "gatekeeper-enabled",
+    name: "gatekeeper-enabled",
     description: "Gatekeeper assessments are enabled.",
     recommendation: "Enable Gatekeeper assessments to allow macOS to verify applications before they run.",
     run: gatekeeper_enabled,

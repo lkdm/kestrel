@@ -188,13 +188,13 @@ pub fn print_scan_simple(result: ScanResult) {
     for check in result.checks {
         match check.result {
             CheckOutcome::Passed => {
-                println!("PASS {}", check.id);
+                println!("PASS {}", check.name);
             }
             CheckOutcome::Failed { .. } => {
-                println!("FAIL {}", check.id);
+                println!("FAIL {}", check.name);
             }
             CheckOutcome::Error(error) => {
-                println!("ERROR {}: {}", check.id, error);
+                println!("ERROR {}: {}", check.name, error);
             }
         }
     }
@@ -207,7 +207,7 @@ pub fn print_scan_json(result: ScanResult) -> Result<(), serde_json::Error> {
 
 pub fn print_checks(result: ListChecksResult) {
     for check in result.checks {
-        println!("{}: {}", check.id, check.description);
+        println!("{}: {}", check.name, check.description);
     }
 }
 
@@ -217,7 +217,7 @@ pub fn print_check_names(result: ListChecksResult) {
         result
             .checks
             .iter()
-            .map(|check| check.id)
+            .map(|check| check.name)
             .collect::<Vec<_>>()
             .join(" ")
     );

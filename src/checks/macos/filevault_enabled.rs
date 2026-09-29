@@ -4,7 +4,7 @@ use crate::{
 };
 
 pub static FILEVAULT_ENABLED: Check = Check {
-    id: "filevault-enabled",
+    name: "filevault-enabled",
     description: "FileVault disk encryption is enabled.",
     recommendation: "Enable FileVault to encrypt the contents of this Mac.",
     run: filevault_enabled,
