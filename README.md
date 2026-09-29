@@ -1,35 +1,79 @@
 # Kestrel
+
 ## A fast, open-source security scanner for your machine.
 
-Kestrel checks your system against practical security controls and gives you actionable results.
+Kestrel checks your system against practical security controls and provides actionable results.
 
-🚧 Early development is currently focused on macOS.
+🚧 **Early development:** Kestrel currently focuses on macOS.
 
-### Install
+## Install
 
-```sh
+```
 cargo install --git https://github.com/lkdm/kestrel
 ```
 
-### Usage
+## Usage
 
-```sh
-# run all available checks
+Run all available checks:
+
+```
 kestrel scan
-
-# list available checks
-kestrel list
-
-# documentation
-kestrel --help
-
-# run specific checks
-kestrel scan --checks sip-enabled filevault-enabled
-
-# run checks matching "firewall"
-kestrel scan --checks $(kestrel list --names | grep firewall)
 ```
 
-### Development
+Run specific checks by name or ID:
+
+```
+kestrel scan --checks sip-enabled filevault-enabled
+```
+
+List available checks:
+
+```
+kestrel list
+```
+
+List check names:
+
+```
+kestrel list names
+```
+
+List check IDs:
+
+```
+kestrel list ids
+```
+
+This can be useful for scripting. For example, to run all checks whose names contain `firewall`:
+
+```
+kestrel scan --checks $(kestrel list names | grep firewall)
+```
+
+You can also use stable check IDs when scripting against a specific check:
+
+```
+kestrel scan --checks 7f4a48c8-8df0-4ad4-a95d-e2ac3d6a74b1
+```
+
+View command documentation:
+
+```
+kestrel --help
+```
+
+## Development
 
 Kestrel is written in Rust and is open source.
+
+Build and run from the repository:
+
+```
+cargo run -- scan
+```
+
+Run the test suite:
+
+```
+cargo test
+```
