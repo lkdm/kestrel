@@ -2,11 +2,12 @@ use crate::checks::{
     Check,
     macos::{
         admin_password_for_preferences::ADMIN_PASSWORD_FOR_PREFERENCES,
-        airdrop_secured::AIRDROP_SECURED, automatic_login_off::AUTOMATIC_LOGIN_DISABLED,
-        file_sharing_off::SMB_FILE_SHARING_DISABLED, filevault_enabled::FILEVAULT_ENABLED,
-        firewall_block_all::FIREWALL_BLOCK_ALL, firewall_enabled::FIREWALL_ENABLED,
-        gatekeeper_enabled::GATEKEEPER_ENABLED, internet_sharing_off::INTERNET_SHARING_DISABLED,
-        macos_updated::MACOS_UPDATED, media_sharing_off::MEDIA_SHARING_DISABLED,
+        airdrop_secured::AIRDROP_SECURED, airplay_receiver_off::AIRPLAY_RECEIVER_DISABLED,
+        automatic_login_off::AUTOMATIC_LOGIN_DISABLED, file_sharing_off::SMB_FILE_SHARING_DISABLED,
+        filevault_enabled::FILEVAULT_ENABLED, firewall_block_all::FIREWALL_BLOCK_ALL,
+        firewall_enabled::FIREWALL_ENABLED, gatekeeper_enabled::GATEKEEPER_ENABLED,
+        internet_sharing_off::INTERNET_SHARING_DISABLED, macos_updated::MACOS_UPDATED,
+        media_sharing_off::MEDIA_SHARING_DISABLED,
         password_after_inactivity::PASSWORD_AFTER_INACTIVITY,
         printer_sharing_off::PRINTER_SHARING_DISABLED,
         remote_login_disabled::REMOTE_LOGIN_DISABLED, sip_enabled::SIP_ENABLED,
@@ -20,6 +21,7 @@ use crate::checks::{
 
 pub mod admin_password_for_preferences;
 pub mod airdrop_secured;
+pub mod airplay_receiver_off;
 pub mod automatic_login_off;
 pub mod file_sharing_off;
 pub mod filevault_enabled;
@@ -55,6 +57,7 @@ pub static CHECKS: &[Check] = &[
     SMB_FILE_SHARING_DISABLED,
     MEDIA_SHARING_DISABLED,
     INTERNET_SHARING_DISABLED,
+    AIRPLAY_RECEIVER_DISABLED,
     // Shared
     SSH_KEYS_STRONG,
     DOCKER_ROOTLESS,
