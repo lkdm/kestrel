@@ -1,9 +1,7 @@
 use crate::{
     checks::{Check, CheckReturnedResult},
-    system::System,
+    system::{CommandResultExt, System, common::command::CommandRequest},
 };
-
-// TODO: This check is incorrect
 
 pub static ADMIN_PASSWORD_FOR_PREFERENCES: Check = Check {
     id: "password-modify-preferences",
@@ -27,12 +25,14 @@ fn authorizationdb_value<'a>(output: &'a str, key: &str) -> Option<&'a str> {
 }
 
 fn admin_password_for_preferences(system: &dyn System) -> CheckReturnedResult {
-    let result = system.command(
-        "/usr/bin/security",
-        &["authorizationdb", "read", "system.preferences"],
-    )?;
+    let result = system
+        .command(&CommandRequest::new(
+            "/usr/bin/security",
+            &["authorizationdb", "read", "system.preferences"],
+        ))
+        .ensure_success()?;
 
-    let output = String::from_utf8_lossy(&result.stdout);
+    let output = result.stdout_utf8();
 
     let authenticate_user = authorizationdb_value(&output, "authenticate-user");
     let class = authorizationdb_value(&output, "class");
@@ -45,19 +45,18 @@ fn admin_password_for_preferences(system: &dyn System) -> CheckReturnedResult {
 
 #[cfg(test)]
 mod tests {
-    use crate::system::test::{CommandKey, TestSystem};
+    use crate::system::{common::command::CommandRequest, test::TestSystem};
 
     use super::*;
 
-    fn lookup_preferences_lock() -> CommandKey {
-        CommandKey::new(
-            "/usr/bin/security",
-            &["authorizationdb", "read", "system.preferences"],
-        )
-    }
-
     fn command_output(stdout: &str) -> TestSystem {
-        TestSystem::new().with_command(lookup_preferences_lock().success(stdout))
+        TestSystem::new().with_command(
+            CommandRequest::new(
+                "/usr/bin/security",
+                &["authorizationdb", "read", "system.preferences"],
+            )
+            .success(stdout),
+        )
     }
 
     #[test]
@@ -239,9 +238,6 @@ mod tests {
 
     #[test]
     fn check_propagates_command_error() {
-        // No command registered — TestSystem returns an error rather than
-        // an `Ok(CommandOutput)`, exercising the `?` in
-        // admin_password_for_preferences.
         let system = TestSystem::new();
 
         let result = admin_password_for_preferences(&system);

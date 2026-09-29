@@ -1,15 +1,26 @@
 use crate::{
     checks::{Check, CheckReturnedResult},
-    system::System,
+    system::{
+        CommandResultExt as _, System, SystemError,
+        common::command::{CommandError, CommandRequest},
+    },
+};
+
+pub static DOCKER_ROOTLESS: Check = Check {
+    id: "docker-rootless",
+    description: "Docker, if installed, is running in rootless mode.",
+    recommendation: "Configure Docker to run in rootless mode.",
+    run: docker_rootless,
 };
 
 fn docker_rootless(system: &dyn System) -> CheckReturnedResult {
-    let result = match system.command("docker", &["info"]) {
+    let result = match system.command(&CommandRequest::new("docker", &["info"])) {
+        // `docker info` ran okay
         Ok(result) => result,
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
-            return Ok(true);
-        }
-        Err(error) => return Err(error),
+        // pass if docker is not installed
+        Err(SystemError::Command(CommandError::NotFound { .. })) => return Ok(true),
+        // some other error
+        Err(error) => return Err(error.into()),
     };
 
     let output = format!(
@@ -25,10 +36,3 @@ fn docker_rootless(system: &dyn System) -> CheckReturnedResult {
 
     Ok(output.contains("rootless"))
 }
-
-pub static DOCKER_ROOTLESS: Check = Check {
-    id: "docker-rootless",
-    description: "Docker, if installed, is running in rootless mode.",
-    recommendation: "Configure Docker to run in rootless mode.",
-    run: docker_rootless,
-};

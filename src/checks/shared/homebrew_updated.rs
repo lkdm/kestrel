@@ -1,19 +1,10 @@
 use crate::{
     checks::{Check, CheckReturnedResult},
-    system::System,
+    system::{
+        System, SystemError,
+        common::command::{CommandError, CommandRequest},
+    },
 };
-
-fn homebrew_updated(system: &dyn System) -> CheckReturnedResult {
-    let result = match system.command("brew", &["outdated", "--quiet"]) {
-        Ok(result) => result,
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
-            return Ok(true);
-        }
-        Err(error) => return Err(error),
-    };
-
-    Ok(String::from_utf8_lossy(&result.stdout).trim().is_empty())
-}
 
 pub static HOMEBREW_UPDATED: Check = Check {
     id: "homebrew-updated",
@@ -21,3 +12,16 @@ pub static HOMEBREW_UPDATED: Check = Check {
     recommendation: "Update your Homebrew packages.",
     run: homebrew_updated,
 };
+
+fn homebrew_updated(system: &dyn System) -> CheckReturnedResult {
+    let result = match system.command(&CommandRequest::new("brew", &["outdated", "--quiet"])) {
+        // program ran okay
+        Ok(result) => result,
+        // program is not installed
+        Err(SystemError::Command(CommandError::NotFound { .. })) => return Ok(true),
+        // some other error
+        Err(error) => return Err(error.into()),
+    };
+
+    Ok(String::from_utf8_lossy(&result.stdout).trim().is_empty())
+}

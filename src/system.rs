@@ -47,6 +47,7 @@ pub trait System: Send + Sync {
 
 pub trait CommandResultExt {
     fn ensure_success(self) -> Result<CommandOutput>;
+    fn ignore_not_found(self) -> Result<Option<CommandOutput>>;
 }
 
 impl CommandResultExt for Result<CommandOutput> {
@@ -63,6 +64,15 @@ impl CommandResultExt for Result<CommandOutput> {
                 stderr: output.stderr_utf8().into_owned(),
             }
             .into())
+        }
+    }
+
+    /// Ignores an error caused by the program not being found
+    fn ignore_not_found(self) -> Result<Option<CommandOutput>> {
+        match self {
+            Ok(output) => Ok(Some(output)),
+            Err(SystemError::Command(CommandError::NotFound { .. })) => Ok(None),
+            Err(error) => Err(error),
         }
     }
 }

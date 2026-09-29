@@ -4,6 +4,15 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum CommandError {
+    #[error("`{program}` not found")]
+    NotFound { program: String },
+
+    #[error("permission denied while spawning `{program}`")]
+    PermissionDenied { program: String },
+
+    #[error("invalid input for `{program}`")]
+    InvalidInput { program: String },
+
     #[error("failed to spawn `{program}`")]
     Spawn {
         program: String,
@@ -17,6 +26,17 @@ pub enum CommandError {
         code: Option<i32>,
         stderr: String,
     },
+}
+
+impl From<(String, std::io::Error)> for CommandError {
+    fn from((program, source): (String, std::io::Error)) -> Self {
+        match source.kind() {
+            std::io::ErrorKind::InvalidInput => Self::InvalidInput { program },
+            std::io::ErrorKind::NotFound => Self::NotFound { program },
+            std::io::ErrorKind::PermissionDenied => Self::PermissionDenied { program },
+            _ => Self::Spawn { program, source },
+        }
+    }
 }
 
 pub type Result<T> = std::result::Result<T, CommandError>;

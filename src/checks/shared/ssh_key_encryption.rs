@@ -2,7 +2,14 @@ use std::path::PathBuf;
 
 use crate::{
     checks::{Check, CheckReturnedResult},
-    system::System,
+    system::{System, common::command::CommandRequest},
+};
+
+pub static SSH_KEYS_STRONG: Check = Check {
+    id: "ssh-keys-strong",
+    description: "SSH private keys use sufficiently strong cryptographic algorithms and key sizes.",
+    recommendation: "Use RSA keys of at least 2048 bits (4096 recommended), ECDSA P-521, or Ed25519. Do not use DSA keys.",
+    run: ssh_keys_strong,
 };
 
 fn ssh_keys_strong(system: &dyn System) -> CheckReturnedResult {
@@ -23,10 +30,11 @@ fn ssh_keys_strong(system: &dyn System) -> CheckReturnedResult {
 
         // ssh-keygen -yf extracts the public key from a private key.
         // This lets us distinguish private keys from other files in ~/.ssh.
-        let result = match system.command("/usr/bin/ssh-keygen", &["-yf", path]) {
-            Ok(result) => result,
-            Err(_) => continue,
-        };
+        let result =
+            match system.command(&CommandRequest::new("/usr/bin/ssh-keygen", &["-yf", path])) {
+                Ok(result) => result,
+                Err(_) => continue,
+            };
 
         let public_key = String::from_utf8_lossy(&result.stdout);
         let key_type = match public_key.split_whitespace().next() {
@@ -34,7 +42,7 @@ fn ssh_keys_strong(system: &dyn System) -> CheckReturnedResult {
             None => continue,
         };
 
-        let result = system.command("/usr/bin/ssh-keygen", &["-lf", path])?;
+        let result = system.command(&CommandRequest::new("/usr/bin/ssh-keygen", &["-lf", path]))?;
 
         let output = String::from_utf8_lossy(&result.stdout);
         let bits = match output
@@ -61,10 +69,3 @@ fn ssh_keys_strong(system: &dyn System) -> CheckReturnedResult {
 
     Ok(true)
 }
-
-pub static SSH_KEYS_STRONG: Check = Check {
-    id: "ssh-keys-strong",
-    description: "SSH private keys use sufficiently strong cryptographic algorithms and key sizes.",
-    recommendation: "Use RSA keys of at least 2048 bits (4096 recommended), ECDSA P-521, or Ed25519. Do not use DSA keys.",
-    run: ssh_keys_strong,
-};
