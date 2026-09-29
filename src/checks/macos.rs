@@ -7,7 +7,7 @@ use crate::checks::{
         gatekeeper_enabled::GATEKEEPER_ENABLED, macos_updated::MACOS_UPDATED,
         password_after_inactivity::PASSWORD_AFTER_INACTIVITY,
         remote_login_disabled::REMOTE_LOGIN_DISABLED, sip_enabled::SIP_ENABLED,
-        std_user::STANDARD_USER,
+        std_user::STANDARD_USER, wifi_encrypted::WIFI_ENCRYPTED,
     },
     shared::{
         docker_rootless::DOCKER_ROOTLESS, homebrew_updated::HOMEBREW_UPDATED,
@@ -26,6 +26,7 @@ pub mod password_after_inactivity;
 pub mod remote_login_disabled;
 pub mod sip_enabled;
 pub mod std_user;
+pub mod wifi_encrypted;
 
 pub static CHECKS: &[Check] = &[
     // macOS
@@ -40,6 +41,7 @@ pub static CHECKS: &[Check] = &[
     GATEKEEPER_ENABLED,
     FILEVAULT_ENABLED,
     FIREWALL_BLOCK_ALL,
+    WIFI_ENCRYPTED,
     // Shared
     SSH_KEYS_STRONG,
     DOCKER_ROOTLESS,
