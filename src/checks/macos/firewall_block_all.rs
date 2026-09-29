@@ -1,3 +1,4 @@
+//! Check that firewall is blocking all incoming connections
 use crate::{
     check_id,
     checks::{Check, CheckReturnedResult},
@@ -20,5 +21,43 @@ fn firewall_block_all(system: &dyn System) -> CheckReturnedResult {
         ))
         .ensure_success()?;
 
-    Ok(result.stdout_utf8().contains("Block all enabled"))
+    Ok(result.stdout_utf8().contains("is blocking all"))
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::system::{common::command::CommandRequest, test::TestSystem};
+
+    use super::*;
+
+    fn command_output(stdout: &str) -> TestSystem {
+        TestSystem::new().with_command(
+            CommandRequest::new(
+                "/usr/libexec/ApplicationFirewall/socketfilterfw",
+                &["--getblockall"],
+            )
+            .success(stdout),
+        )
+    }
+
+    #[test]
+    fn firewall_block_all_returns_true_when_firewall_is_blocking_all() {
+        let system = command_output("Firewall is blocking all incoming connections.");
+
+        assert!(firewall_block_all(&system).unwrap());
+    }
+
+    #[test]
+    fn firewall_block_all_returns_false_when_firewall_is_not_blocking_all() {
+        let system = command_output("Firewall has block all state set to disabled.");
+
+        assert!(!firewall_block_all(&system).unwrap());
+    }
+
+    #[test]
+    fn firewall_block_all_returns_false_when_output_does_not_contain_blocking_message() {
+        let system = command_output("Unexpected output");
+
+        assert!(!firewall_block_all(&system).unwrap());
+    }
 }
