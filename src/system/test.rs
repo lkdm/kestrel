@@ -7,7 +7,7 @@ use crate::system::{Result, SystemError, common::command::CommandRequest};
 
 use super::{CommandOutput, System};
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct TestSystem {
     commands: HashMap<CommandRequest, CommandOutput>,
     paths: HashMap<PathBuf, bool>,

@@ -104,34 +104,29 @@ impl CommandOutput {
 #[cfg(test)]
 impl CommandRequest {
     pub fn success(&self, stdout: impl Into<Vec<u8>>) -> (CommandRequest, CommandOutput) {
-        (self.clone(), CommandOutput::test_success(stdout))
+        (
+            self.clone(),
+            CommandOutput {
+                program: self.program.clone(),
+                args: self.args.clone(),
+                status: test_exit_status(0),
+                stdout: stdout.into(),
+                stderr: Vec::new(),
+            },
+        )
     }
 
-    pub fn failure(&self, stdout: impl Into<Vec<u8>>) -> (CommandRequest, CommandOutput) {
-        (self.clone(), CommandOutput::test_failure(stdout))
-    }
-}
-
-#[cfg(test)]
-impl CommandOutput {
-    pub fn test_success(stdout: impl Into<Vec<u8>>) -> Self {
-        Self {
-            program: String::new(),
-            args: Vec::new(),
-            status: test_exit_status(0),
-            stdout: stdout.into(),
-            stderr: Vec::new(),
-        }
-    }
-
-    pub fn test_failure(stdout: impl Into<Vec<u8>>) -> Self {
-        Self {
-            program: String::new(),
-            args: Vec::new(),
-            status: test_exit_status(1),
-            stdout: stdout.into(),
-            stderr: Vec::new(),
-        }
+    pub fn failure(&self, stderr: impl Into<Vec<u8>>) -> (CommandRequest, CommandOutput) {
+        (
+            self.clone(),
+            CommandOutput {
+                program: self.program.clone(),
+                args: self.args.clone(),
+                status: test_exit_status(1),
+                stdout: Vec::new(),
+                stderr: stderr.into(),
+            },
+        )
     }
 }
 
