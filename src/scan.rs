@@ -29,6 +29,7 @@ impl ScanContext {
 
 #[derive(Debug, Serialize)]
 pub struct CheckResult {
+    pub id: String,
     pub name: &'static str,
     pub description: &'static str,
     pub result: CheckOutcome,
@@ -52,6 +53,7 @@ impl CheckResult {
         };
 
         Self {
+            id: check.id.to_string(),
             name: check.name,
             description: check.description,
             result,
