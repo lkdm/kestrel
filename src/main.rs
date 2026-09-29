@@ -10,6 +10,7 @@ pub mod checks;
 pub mod cli;
 pub mod constants;
 pub mod error;
+pub mod host;
 pub mod list;
 pub mod scan;
 pub mod system;
