@@ -1,3 +1,4 @@
+//! Check macOS up to date
 use crate::{
     check_id,
     checks::{Check, CheckReturnedResult},

@@ -27,6 +27,9 @@ pub use linux::CHECKS;
 
 #[derive(Debug, Error)]
 pub enum CheckError {
+    #[error("requires administrator privileges")]
+    RequiresAdmin,
+
     #[error("system error: {0}")]
     System(#[from] SystemError),
 }

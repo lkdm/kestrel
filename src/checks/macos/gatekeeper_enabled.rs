@@ -1,3 +1,4 @@
+//! Check Gatekeeper is enabled
 use crate::{
     check_id,
     checks::{Check, CheckReturnedResult},

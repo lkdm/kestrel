@@ -1,6 +1,7 @@
+//! Check that remote login is disabled
 use crate::{
     check_id,
-    checks::{Check, CheckReturnedResult},
+    checks::{Check, CheckError, CheckReturnedResult},
     system::{CommandResultExt as _, System, common::command::CommandRequest},
 };
 
@@ -19,6 +20,13 @@ fn remote_login_disabled(system: &dyn System) -> CheckReturnedResult {
             &["-getremotelogin"],
         ))
         .ensure_success()?;
+
+    if result
+        .stdout_utf8()
+        .contains("You need administrator access")
+    {
+        return Err(CheckError::RequiresAdmin);
+    }
 
     Ok(result.stdout_utf8().contains("Remote Login: Off"))
 }
@@ -57,15 +65,23 @@ mod tests {
 
     #[test]
     fn returns_error_when_systemsetup_exits_nonzero() {
+        let system =
+            TestSystem::new().with_command(get_remote_login().failure("some unexpected error"));
+
+        let result = remote_login_disabled(&system);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn returns_requires_admin_when_systemsetup_requires_administrator_access() {
         let system = TestSystem::new().with_command(
-            get_remote_login().failure("systemsetup: requires administrator privileges"),
+            get_remote_login()
+                .success("You need administrator access to run this tool... exiting!"),
         );
 
         let result = remote_login_disabled(&system);
 
-        assert!(
-            result.is_err(),
-            "expected non-zero systemsetup exit to return an error"
-        );
+        assert!(matches!(result, Err(CheckError::RequiresAdmin)));
     }
 }
