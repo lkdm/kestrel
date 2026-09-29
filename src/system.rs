@@ -30,7 +30,7 @@ pub enum SystemError {
 
 pub type Result<T> = std::result::Result<T, SystemError>;
 
-/// represents interaction with the host system
+/// represents host system
 pub trait System: Send + Sync {
     /// run a system command
     fn command(&self, request: &CommandRequest) -> Result<CommandOutput>;

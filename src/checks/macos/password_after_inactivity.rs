@@ -1,6 +1,9 @@
 use crate::{
     checks::{Check, CheckReturnedResult},
-    system::{CommandResultExt as _, System, common::command::CommandRequest},
+    system::{
+        CommandResultExt as _, System, SystemError,
+        common::command::{CommandError, CommandRequest},
+    },
 };
 
 pub static PASSWORD_AFTER_INACTIVITY: Check = Check {
@@ -11,19 +14,23 @@ pub static PASSWORD_AFTER_INACTIVITY: Check = Check {
 };
 // TODO: what do you want password_after_inactivity to do when the askForPassword key has never been set?
 fn password_after_inactivity(system: &dyn System) -> CheckReturnedResult {
-    let result = system
-        .command(&CommandRequest::new(
-            "/usr/bin/defaults",
-            &[
-                "-currentHost",
-                "read",
-                "com.apple.screensaver",
-                "askForPassword",
-            ],
-        ))
-        .ensure_success()?;
-
-    Ok(result.stdout_utf8().trim() == "1")
+    match system.command(&CommandRequest::new(
+        "/usr/bin/defaults",
+        &[
+            "-currentHost",
+            "read",
+            "com.apple.screensaver",
+            "askForPassword",
+        ],
+    )) {
+        Ok(result) => Ok(result.stdout_utf8().trim() == "1"),
+        Err(SystemError::Command(CommandError::NonZeroExit { stderr, .. }))
+            if stderr.contains("does not exist") =>
+        {
+            Ok(false)
+        }
+        Err(error) => Err(error.into()),
+    }
 }
 
 #[cfg(test)]
@@ -73,19 +80,5 @@ mod tests {
         let passed = password_after_inactivity(&system).expect("check should execute successfully");
 
         assert!(!passed);
-    }
-
-    #[test]
-    fn returns_error_when_defaults_exits_nonzero() {
-        let system = TestSystem::new().with_command(
-            ask_for_password().failure("defaults: the domain/default pair does not exist"),
-        );
-
-        let result = password_after_inactivity(&system);
-
-        assert!(
-            result.is_err(),
-            "expected non-zero defaults exit to return an error"
-        );
     }
 }

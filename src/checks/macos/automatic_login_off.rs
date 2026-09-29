@@ -1,6 +1,9 @@
 use crate::{
     checks::{Check, CheckReturnedResult},
-    system::{CommandResultExt as _, System, common::command::CommandRequest},
+    system::{
+        CommandResultExt as _, System, SystemError,
+        common::command::{CommandError, CommandRequest},
+    },
 };
 
 pub static AUTOMATIC_LOGIN_DISABLED: Check = Check {
@@ -14,16 +17,20 @@ pub static AUTOMATIC_LOGIN_DISABLED: Check = Check {
 ///
 /// `defaults read` exits non-zero when the key doesn't exist, meaning automatic login is not configured
 fn automatic_login_disabled(system: &dyn System) -> CheckReturnedResult {
-    let result = system
-        .command(&CommandRequest::new(
-            "/usr/bin/defaults",
-            &[
-                "read",
-                "/Library/Preferences/com.apple.loginwindow",
-                "autoLoginUser",
-            ],
-        ))
-        .ensure_success()?;
-
-    Ok(result.stdout_utf8().trim().is_empty())
+    match system.command(&CommandRequest::new(
+        "/usr/bin/defaults",
+        &[
+            "read",
+            "/Library/Preferences/com.apple.loginwindow",
+            "autoLoginUser",
+        ],
+    )) {
+        Ok(_) => Ok(false),
+        Err(SystemError::Command(CommandError::NonZeroExit { stderr, .. }))
+            if stderr.contains("does not exist") =>
+        {
+            Ok(true)
+        }
+        Err(error) => Err(error.into()),
+    }
 }
