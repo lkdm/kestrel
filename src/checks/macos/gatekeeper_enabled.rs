@@ -1,9 +1,11 @@
 use crate::{
+    check_id,
     checks::{Check, CheckReturnedResult},
     system::{CommandResultExt as _, System, common::command::CommandRequest},
 };
 
 pub static GATEKEEPER_ENABLED: Check = Check {
+    id: check_id!("59CB997A-025E-47B4-92FF-958DF0E5011B"),
     name: "gatekeeper-enabled",
     description: "Gatekeeper assessments are enabled.",
     recommendation: "Enable Gatekeeper assessments to allow macOS to verify applications before they run.",

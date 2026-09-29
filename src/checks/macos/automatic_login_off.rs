@@ -1,4 +1,5 @@
 use crate::{
+    check_id,
     checks::{Check, CheckReturnedResult},
     system::{
         CommandResultExt as _, System, SystemError,
@@ -7,6 +8,7 @@ use crate::{
 };
 
 pub static AUTOMATIC_LOGIN_DISABLED: Check = Check {
+    id: check_id!("F066209D-A72C-41F8-9D57-386AE1BDA9A4"),
     name: "automatic-login-disabled",
     description: "Automatic login is disabled.",
     recommendation: "Disable automatic login to require authentication when logging in to macOS.",

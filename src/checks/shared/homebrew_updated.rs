@@ -1,4 +1,5 @@
 use crate::{
+    check_id,
     checks::{Check, CheckReturnedResult},
     system::{
         System, SystemError,
@@ -7,6 +8,7 @@ use crate::{
 };
 
 pub static HOMEBREW_UPDATED: Check = Check {
+    id: check_id!("DFB671BF-6B06-4E00-90C3-D9A8F392F67D"),
     name: "homebrew-updated",
     description: "All Homebrew packages are up to date.",
     recommendation: "Update your Homebrew packages.",

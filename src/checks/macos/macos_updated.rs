@@ -1,9 +1,11 @@
 use crate::{
+    check_id,
     checks::{Check, CheckReturnedResult},
     system::{CommandResultExt as _, System, common::command::CommandRequest},
 };
 
 pub static MACOS_UPDATED: Check = Check {
+    id: check_id!("36142DDE-DBDE-46F0-8D49-74C52D263D4C"),
     name: "macos-updated",
     description: "macOS is up to date.",
     recommendation: "Install the latest available macOS updates.",

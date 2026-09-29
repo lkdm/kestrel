@@ -1,9 +1,11 @@
 use crate::{
+    check_id,
     checks::{Check, CheckReturnedResult},
     system::{CommandResultExt, System, common::command::CommandRequest},
 };
 
 pub static SIP_ENABLED: Check = Check {
+    id: check_id!("7AF8D9F9-59E4-4977-8A65-F52252662668"),
     name: "sip-enabled",
     description: "System Integrity Protection is enabled.",
     recommendation: "Enable System Integrity Protection to protect critical macOS system files and settings.",

@@ -26,9 +26,11 @@ pub enum Commands {
     /// lists checks available for your device
     #[command(name = "list")]
     ListChecks {
-        /// List only check names, separated by spaces for use with `--checks
-        #[arg(long)]
-        names: bool,
+        #[command(subcommand)]
+        command: Option<ListCommands>,
+        // /// List only check names, separated by spaces for use with `--checks
+        // #[arg(long)]
+        // names: bool,
     },
 
     /// scan your device
@@ -206,8 +208,25 @@ pub fn print_scan_json(result: ScanResult) -> Result<(), serde_json::Error> {
 }
 
 pub fn print_checks(result: ListChecksResult) {
+    let id_width = result
+        .checks
+        .iter()
+        .map(|check| check.id.to_string().len())
+        .max()
+        .unwrap_or(0);
+
+    let name_width = result
+        .checks
+        .iter()
+        .map(|check| check.name.len())
+        .max()
+        .unwrap_or(0);
+
     for check in result.checks {
-        println!("{}: {}", check.name, check.description);
+        println!(
+            "{:<id_width$}  {:<name_width$}  {}",
+            check.id, check.name, check.description,
+        );
     }
 }
 
@@ -223,6 +242,27 @@ pub fn print_check_names(result: ListChecksResult) {
     );
 }
 
+pub fn print_check_ids(result: ListChecksResult) {
+    println!(
+        "{}",
+        result
+            .checks
+            .iter()
+            .map(|check| check.id.to_string())
+            .collect::<Vec<_>>()
+            .join(" ")
+    );
+}
+
 pub fn print_error(error: &AppError) {
     eprintln!("{}", style(error).red());
+}
+
+#[derive(Debug, Subcommand)]
+pub enum ListCommands {
+    /// List check names.
+    Names,
+
+    /// List check IDs.
+    Ids,
 }

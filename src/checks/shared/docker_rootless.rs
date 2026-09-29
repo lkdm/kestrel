@@ -1,4 +1,5 @@
 use crate::{
+    check_id,
     checks::{Check, CheckReturnedResult},
     system::{
         CommandResultExt as _, System, SystemError,
@@ -7,6 +8,7 @@ use crate::{
 };
 
 pub static DOCKER_ROOTLESS: Check = Check {
+    id: check_id!("E3AF8C1C-8EA0-4155-AB27-B9EB50412B37"),
     name: "docker-rootless",
     description: "Docker, if installed, is running in rootless mode.",
     recommendation: "Configure Docker to run in rootless mode.",

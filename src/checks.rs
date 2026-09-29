@@ -1,5 +1,5 @@
 use crate::system::{System, SystemError};
-use std::io;
+use std::{collections::HashSet, io};
 
 #[cfg(target_os = "macos")]
 pub mod macos;
@@ -16,7 +16,9 @@ pub mod shared;
 pub use macos::CHECKS;
 
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
+use serde::Serialize;
 use thiserror::Error;
+use uuid::Uuid;
 #[cfg(target_os = "windows")]
 pub use windows::CHECKS;
 
@@ -33,6 +35,7 @@ pub type Result<T> = std::result::Result<T, CheckError>;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Check {
+    pub id: CheckId,
     /// unique check identifier
     pub name: &'static str,
     /// human-readable description
@@ -52,6 +55,9 @@ pub type CheckReturnedResult = Result<bool>;
 pub enum ChecksError {
     #[error("unknown checks: {}", .0.join(", "))]
     UnknownChecks(Vec<String>),
+
+    #[error("duplicate checks:\n  {}", .0.join("\n  "))]
+    DuplicateChecks(Vec<String>),
 }
 
 /// enumeration of checks
@@ -69,17 +75,35 @@ impl Checks {
         }
 
         let mut checks = Vec::new();
+        let mut selected_ids = HashSet::new();
         let mut unknown = Vec::new();
+        let mut duplicate_ids = HashSet::new();
+        let mut duplicates = Vec::new();
 
-        for id in selected {
-            match CHECKS.iter().find(|check| check.name == id) {
+        for value in selected {
+            let check = value
+                .parse::<CheckId>()
+                .ok()
+                .and_then(|id| CHECKS.iter().find(|check| check.id == id))
+                .or_else(|| CHECKS.iter().find(|check| check.name == value));
+
+            match check {
+                Some(check) if !selected_ids.insert(check.id) => {
+                    if duplicate_ids.insert(check.id) {
+                        duplicates.push(format!("{} ({})", check.name, check.id));
+                    }
+                }
                 Some(check) => checks.push(check),
-                None => unknown.push(id.clone()),
+                None => unknown.push(value.clone()),
             }
         }
 
         if !unknown.is_empty() {
             return Err(ChecksError::UnknownChecks(unknown));
+        }
+
+        if !duplicates.is_empty() {
+            return Err(ChecksError::DuplicateChecks(duplicates));
         }
 
         Ok(Self(checks))
@@ -96,4 +120,34 @@ impl Checks {
     pub fn len(&self) -> usize {
         self.0.len()
     }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct CheckId(Uuid);
+
+impl CheckId {
+    pub const fn new(value: Uuid) -> Self {
+        Self(value)
+    }
+}
+
+impl std::str::FromStr for CheckId {
+    type Err = uuid::Error;
+
+    fn from_str(value: &str) -> std::result::Result<CheckId, uuid::Error> {
+        Ok(Self(Uuid::parse_str(value)?))
+    }
+}
+
+impl std::fmt::Display for CheckId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.0.fmt(f)
+    }
+}
+
+#[macro_export]
+macro_rules! check_id {
+    ($uuid:literal) => {
+        $crate::checks::CheckId::new(uuid::uuid!($uuid))
+    };
 }

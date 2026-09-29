@@ -1,5 +1,5 @@
 use crate::checks::Checks;
-use crate::cli::{Cli, Commands, ProgressMode};
+use crate::cli::{Cli, Commands, ListCommands, ProgressMode};
 use crate::error::AppError;
 use crate::list::list_checks;
 use crate::scan::ScanContext;
@@ -38,13 +38,13 @@ fn run() -> Result<(), AppError> {
     let system = SystemImpl;
 
     match cli.command {
-        Commands::ListChecks { names } => {
+        Commands::ListChecks { command } => {
             let result = list_checks();
 
-            if names {
-                cli::print_check_names(result);
-            } else {
-                cli::print_checks(result);
+            match command {
+                None => cli::print_checks(result),
+                Some(ListCommands::Names) => cli::print_check_names(result),
+                Some(ListCommands::Ids) => cli::print_check_ids(result),
             }
         }
 

@@ -1,9 +1,11 @@
 use crate::{
+    check_id,
     checks::{Check, CheckReturnedResult},
     system::{CommandResultExt as _, System, common::command::CommandRequest},
 };
 
 pub static FIREWALL_ENABLED: Check = Check {
+    id: check_id!("CFCA04F1-591A-4931-9165-E2C6B34F86C4"),
     name: "firewall-enabled",
     description: "The macOS firewall is enabled.",
     recommendation: "Enable the macOS firewall in System Settings.",

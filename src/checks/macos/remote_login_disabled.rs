@@ -1,9 +1,11 @@
 use crate::{
+    check_id,
     checks::{Check, CheckReturnedResult},
     system::{CommandResultExt as _, System, common::command::CommandRequest},
 };
 
 pub static REMOTE_LOGIN_DISABLED: Check = Check {
+    id: check_id!("25BC191F-171A-47DB-BDF9-64573497054B"),
     name: "remote-login-disabled",
     description: "Remote Login is disabled.",
     recommendation: "Disable Remote Login unless it is required.",
