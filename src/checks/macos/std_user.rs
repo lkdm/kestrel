@@ -1,3 +1,4 @@
+//! Check that user is a standard user (not in admin group)
 use crate::{
     check_id,
     checks::{Check, CheckReturnedResult},

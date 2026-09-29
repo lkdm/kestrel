@@ -1,3 +1,4 @@
+//! Check SIP enabled
 use crate::{
     check_id,
     checks::{Check, CheckReturnedResult},
