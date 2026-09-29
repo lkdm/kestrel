@@ -16,15 +16,35 @@ pub mod system;
 pub mod tracing;
 
 // ## Road to release
-// Co-located unit tests with mock
-// Check metadata/references/guide
-// 20-30 solid mac tests
-// Useful exit codes
-// README with example output
-// Licence
-// CI
-// Release binaries
-// Basic contribution guide
+//
+// Correctness
+// - Co-located unit tests with mock
+// - Tests for every existing check
+// - Test command error classification
+// - Test check selection by name and ID
+// - Test duplicate check detection
+// - Test JSON output/schema
+//
+// Checks
+// - 20-30 solid macOS checks
+// - Check metadata/references/guide
+// - Consistent check behavior and error handling
+//
+// CLI
+// - Useful exit codes
+// - Stable machine-readable output
+// - Good --help output
+// - Clear error messages
+//
+// Project
+// - CI
+// - Licence
+// - Basic contribution guide
+// - README with examples
+//
+// Distribution
+// - Release binaries
+// - Versioning / release process
 
 fn main() {
     if let Err(error) = run() {
