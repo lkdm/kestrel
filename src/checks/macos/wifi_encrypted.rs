@@ -8,8 +8,9 @@ use crate::{
 pub static WIFI_ENCRYPTED: Check = Check {
     id: check_id!("86F3D3A1-5BB6-4D4E-A070-0461F4A37AA8"),
     name: "wifi-encrypted",
-    description: "The Mac is connected to an encrypted Wi-Fi network.",
-    recommendation: "Connect to a Wi-Fi network that uses encryption.",
+    title: "Require a connection to an encrypted Wi-Fi network",
+    passed_message: "The Mac is connected to an encrypted Wi-Fi network",
+    failed_message: "The Mac is not connected to an encrypted Wi-Fi network",
     run: wifi_encrypted,
 };
 

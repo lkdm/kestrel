@@ -31,31 +31,31 @@ impl ScanContext {
 pub struct CheckResult {
     pub id: String,
     pub name: &'static str,
-    pub description: &'static str,
+    pub title: &'static str,
+    pub message: String,
     pub result: CheckOutcome,
 }
 
 #[derive(Debug, Serialize)]
 pub enum CheckOutcome {
     Passed,
-    Failed { recommendation: String },
-    Error(String),
+    Failed,
+    Error,
 }
 
 impl CheckResult {
     pub fn new(check: &Check, result: CheckReturnedResult) -> Self {
-        let result = match result {
-            Ok(true) => CheckOutcome::Passed,
-            Ok(false) => CheckOutcome::Failed {
-                recommendation: check.recommendation.to_string(),
-            },
-            Err(error) => CheckOutcome::Error(error.to_string()),
+        let (result, message) = match result {
+            Ok(true) => (CheckOutcome::Passed, check.passed_message.to_string()),
+            Ok(false) => (CheckOutcome::Failed, check.failed_message.to_string()),
+            Err(error) => (CheckOutcome::Error, error.to_string()),
         };
 
         Self {
             id: check.id.to_string(),
             name: check.name,
-            description: check.description,
+            title: check.title,
+            message,
             result,
         }
     }
@@ -73,8 +73,8 @@ impl ScanSummary {
         checks.iter().fold(Self::default(), |mut summary, check| {
             match check.result {
                 CheckOutcome::Passed => summary.passed += 1,
-                CheckOutcome::Failed { .. } => summary.failed += 1,
-                CheckOutcome::Error(_) => summary.errors += 1,
+                CheckOutcome::Failed => summary.failed += 1,
+                CheckOutcome::Error => summary.errors += 1,
             }
 
             summary

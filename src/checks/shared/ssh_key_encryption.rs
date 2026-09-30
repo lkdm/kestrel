@@ -9,8 +9,9 @@ use crate::{
 pub static SSH_KEYS_STRONG: Check = Check {
     id: check_id!("842F7AB0-29F6-4FE0-8500-CE2ABB9F7F2F"),
     name: "ssh-keys-strong",
-    description: "SSH private keys use sufficiently strong cryptographic algorithms and key sizes.",
-    recommendation: "Use RSA keys of at least 2048 bits (4096 recommended), ECDSA P-521, or Ed25519. Do not use DSA keys.",
+    title: "Require SSH private keys to use strong cryptography",
+    passed_message: "SSH private keys use sufficiently strong cryptographic algorithms and key sizes",
+    failed_message: "One or more SSH private keys use weak cryptography or key sizes",
     run: ssh_keys_strong,
 };
 

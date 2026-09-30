@@ -7,8 +7,9 @@ use crate::{
 pub static PRINTER_SHARING_DISABLED: Check = Check {
     id: check_id!("447883E3-AB02-4880-A8A0-7CB16F30BB75"),
     name: "printer-sharing-disabled",
-    description: "Printer Sharing is disabled.",
-    recommendation: "Disable Printer Sharing when it is not needed.",
+    title: "Require Printer Sharing to be disabled",
+    passed_message: "Printer Sharing is disabled",
+    failed_message: "Printer Sharing is enabled",
     run: printer_sharing_disabled,
 };
 

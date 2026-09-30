@@ -8,8 +8,9 @@ use crate::{
 pub static FIREWALL_BLOCK_ALL: Check = Check {
     id: check_id!("2E2DFC68-BDF5-463C-BD55-792C28A26E67"),
     name: "firewall-block-incoming",
-    description: "The macOS firewall is configured to block all incoming connections.",
-    recommendation: "Enable Block All Incoming Connections in the macOS firewall settings.",
+    title: "Require the macOS firewall to block all incoming connections",
+    passed_message: "The macOS firewall is configured to block all incoming connections",
+    failed_message: "The macOS firewall is not configured to block all incoming connections",
     run: firewall_block_all,
 };
 

@@ -151,8 +151,8 @@ pub fn print_scan_human(result: ScanResult) {
     for check in result.checks {
         match &check.result {
             CheckOutcome::Passed => passed.push(check),
-            CheckOutcome::Failed { .. } => failed.push(check),
-            CheckOutcome::Error(_) => errors.push(check),
+            CheckOutcome::Failed => failed.push(check),
+            CheckOutcome::Error => errors.push(check),
         }
     }
 
@@ -160,7 +160,7 @@ pub fn print_scan_human(result: ScanResult) {
         println!("\n{}", style("PASS").green().bold());
 
         for check in &passed {
-            println!("  {} {}", style("✓").green(), check.description);
+            println!("  {} {}", style("✓").green(), check.message);
         }
     }
 
@@ -168,9 +168,9 @@ pub fn print_scan_human(result: ScanResult) {
         println!("\n{}", style("FAIL").red().bold());
 
         for check in &failed {
-            if let CheckOutcome::Failed { recommendation } = &check.result {
-                println!("  {} {}", style("✗").red(), check.description);
-                println!("    → {}", recommendation);
+            if let CheckOutcome::Failed = &check.result {
+                println!("  {} {}", style("✗").red(), check.title);
+                println!("    → {}", check.message);
             }
         }
     }
@@ -179,8 +179,13 @@ pub fn print_scan_human(result: ScanResult) {
         println!("\n{}", style("ERROR").yellow().bold());
 
         for check in &errors {
-            if let CheckOutcome::Error(error) = &check.result {
-                println!("  {} {}: {}", style("!").yellow(), check.description, error);
+            if let CheckOutcome::Error = &check.result {
+                println!(
+                    "  {} {}: {}",
+                    style("!").yellow(),
+                    check.name,
+                    check.message
+                );
             }
         }
     }
@@ -195,8 +200,8 @@ pub fn print_scan_simple(result: ScanResult) {
             CheckOutcome::Failed { .. } => {
                 println!("FAIL {}", check.name);
             }
-            CheckOutcome::Error(error) => {
-                println!("ERROR {}: {}", check.name, error);
+            CheckOutcome::Error => {
+                println!("ERROR {}: {}", check.name, check.title);
             }
         }
     }
@@ -225,7 +230,7 @@ pub fn print_checks(result: ListChecksResult) {
     for check in result.checks {
         println!(
             "{:<id_width$}  {:<name_width$}  {}",
-            check.id, check.name, check.description,
+            check.id, check.name, check.title,
         );
     }
 }

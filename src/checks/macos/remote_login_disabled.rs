@@ -8,8 +8,9 @@ use crate::{
 pub static REMOTE_LOGIN_DISABLED: Check = Check {
     id: check_id!("25BC191F-171A-47DB-BDF9-64573497054B"),
     name: "remote-login-disabled",
-    description: "Remote Login is disabled.",
-    recommendation: "Disable Remote Login unless it is required.",
+    title: "Require Remote Login to be disabled",
+    passed_message: "Remote Login is disabled",
+    failed_message: "Remote Login is enabled",
     run: remote_login_disabled,
 };
 

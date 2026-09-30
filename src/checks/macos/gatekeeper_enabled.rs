@@ -8,8 +8,9 @@ use crate::{
 pub static GATEKEEPER_ENABLED: Check = Check {
     id: check_id!("59CB997A-025E-47B4-92FF-958DF0E5011B"),
     name: "gatekeeper-enabled",
-    description: "Gatekeeper assessments are enabled.",
-    recommendation: "Enable Gatekeeper assessments to allow macOS to verify applications before they run.",
+    title: "Require Gatekeeper assessments to be enabled",
+    passed_message: "Gatekeeper assessments are enabled",
+    failed_message: "Gatekeeper assessments are disabled",
     run: gatekeeper_enabled,
 };
 

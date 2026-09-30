@@ -7,8 +7,9 @@ use crate::{
 pub static AIRDROP_SECURED: Check = Check {
     id: check_id!("CAE45547-CD42-4D11-8224-23C23204DDBD"),
     name: "airdrop-secured",
-    description: "AirDrop is restricted to Contacts Only or disabled.",
-    recommendation: "Set AirDrop discovery to Contacts Only or Off.",
+    title: "Require AirDrop to be restricted to Contacts Only or disabled",
+    passed_message: "AirDrop is restricted to Contacts Only or disabled",
+    failed_message: "AirDrop is not restricted to Contacts Only or disabled",
     run: airdrop_secured,
 };
 

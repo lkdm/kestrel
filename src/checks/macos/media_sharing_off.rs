@@ -7,8 +7,9 @@ use crate::{
 pub static MEDIA_SHARING_DISABLED: Check = Check {
     id: check_id!("D3613AC3-269F-43EB-B67D-52DA249C9E1A"),
     name: "media-sharing-disabled",
-    description: "Media Sharing is disabled.",
-    recommendation: "Disable Media Sharing when it is not needed.",
+    title: "Require Media Sharing to be disabled",
+    passed_message: "Media Sharing is disabled",
+    failed_message: "Media Sharing is enabled",
     run: media_sharing_disabled,
 };
 

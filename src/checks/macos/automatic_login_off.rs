@@ -11,8 +11,9 @@ use crate::{
 pub static AUTOMATIC_LOGIN_DISABLED: Check = Check {
     id: check_id!("F066209D-A72C-41F8-9D57-386AE1BDA9A4"),
     name: "automatic-login-disabled",
-    description: "Automatic login is disabled.",
-    recommendation: "Disable automatic login to require authentication when logging in to macOS.",
+    title: "Require automatic login to be disabled",
+    passed_message: "Automatic login is disabled",
+    failed_message: "Automatic login is enabled",
     run: automatic_login_disabled,
 };
 

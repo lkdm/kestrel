@@ -8,8 +8,9 @@ use crate::{
 pub static SIP_ENABLED: Check = Check {
     id: check_id!("7AF8D9F9-59E4-4977-8A65-F52252662668"),
     name: "sip-enabled",
-    description: "System Integrity Protection is enabled.",
-    recommendation: "Enable System Integrity Protection to protect critical macOS system files and settings.",
+    title: "Require System Integrity Protection to be enabled",
+    passed_message: "System Integrity Protection is enabled",
+    failed_message: "System Integrity Protection is disabled",
     run: sip_enabled,
 };
 

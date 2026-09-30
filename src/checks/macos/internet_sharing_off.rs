@@ -7,8 +7,9 @@ use crate::{
 pub static INTERNET_SHARING_DISABLED: Check = Check {
     id: check_id!("E7758D2B-92AD-44C4-8B81-8BC4E7961296"),
     name: "internet-sharing-disabled",
-    description: "Internet Sharing is disabled.",
-    recommendation: "Disable Internet Sharing when it is not needed.",
+    title: "Require Internet Sharing to be disabled",
+    passed_message: "Internet Sharing is disabled",
+    failed_message: "Internet Sharing is enabled",
     run: internet_sharing_disabled,
 };
 

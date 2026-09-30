@@ -8,8 +8,9 @@ use crate::{
 pub static SMB_FILE_SHARING_DISABLED: Check = Check {
     id: check_id!("47E6929E-D7E7-4B72-ABF1-755E06B7541B"),
     name: "smb-file-sharing-disabled",
-    description: "SMB File Sharing is disabled.",
-    recommendation: "Disable SMB File Sharing when it is not needed.",
+    title: "Require SMB File Sharing to be disabled",
+    passed_message: "SMB File Sharing is disabled",
+    failed_message: "SMB File Sharing is enabled",
     run: smb_file_sharing_disabled,
 };
 

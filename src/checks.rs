@@ -38,13 +38,19 @@ pub type Result<T> = std::result::Result<T, CheckError>;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Check {
-    pub id: CheckId,
     /// unique check identifier
+    pub id: CheckId,
+    /// cli and url friendly name
     pub name: &'static str,
-    /// human-readable description
-    pub description: &'static str,
-    /// reccomendation for remediation
-    pub recommendation: &'static str,
+    /// short policy title "Require _ to be _"
+    /// Verb + desired policy state
+    pub title: &'static str,
+    /// Concise positive statement "Security feature is disabled"
+    /// Subject + is/has + desired state
+    pub passed_message: &'static str,
+    /// Concise negative statement "Security feature is enabled"
+    /// Subject + is/has not + desired state
+    pub failed_message: &'static str,
     /// function to run the check
     pub run: CheckFn,
 }

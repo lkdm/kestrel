@@ -7,8 +7,9 @@ use crate::{
 pub static ADMIN_PASSWORD_FOR_PREFERENCES: Check = Check {
     id: check_id!("1722C2BF-2A17-4633-B1E2-80E15726DFCE"),
     name: "password-modify-preferences",
-    description: "An administrator password is required to modify system-wide preferences.",
-    recommendation: "Require an administrator password to modify system-wide preferences.",
+    title: "Require System Preferences to be password-protected",
+    passed_message: "System Preferences is password-protected",
+    failed_message: "System Preferences is not password-protected",
     run: admin_password_for_preferences,
 };
 

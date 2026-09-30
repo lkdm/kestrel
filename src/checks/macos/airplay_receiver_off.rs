@@ -7,8 +7,9 @@ use crate::{
 pub static AIRPLAY_RECEIVER_DISABLED: Check = Check {
     id: check_id!("1B2AF42D-A79A-4B1D-AD86-3F885F17AF8B"),
     name: "airplay-receiver-disabled",
-    description: "AirPlay Receiver is disabled.",
-    recommendation: "Disable AirPlay Receiver when it is not needed.",
+    title: "Require AirPlay Receiver to be disabled",
+    passed_message: "AirPlay Receiver is disabled",
+    failed_message: "AirPlay Receiver is enabled",
     run: airplay_receiver_disabled,
 };
 

@@ -10,8 +10,9 @@ use crate::{
 pub static PASSWORD_AFTER_INACTIVITY: Check = Check {
     id: check_id!("7F4A48C8-8DF0-4AD4-A95D-E2AC3D6A74B1"),
     name: "password-after-inactivity",
-    description: "A password is required immediately after inactivity.",
-    recommendation: "Require a password immediately when the screen saver starts.",
+    title: "Require a password immediately after inactivity",
+    passed_message: "A password is required immediately when the screen saver starts",
+    failed_message: "A password is not required immediately when the screen saver starts",
     run: password_after_inactivity,
 };
 // TODO: what do you want password_after_inactivity to do when the askForPassword key has never been set?

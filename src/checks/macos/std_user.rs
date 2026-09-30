@@ -8,8 +8,9 @@ use crate::{
 pub static STANDARD_USER: Check = Check {
     id: check_id!("3E5D46DC-2FBF-4A43-A244-AA3E70FC6625"),
     name: "standard-user",
-    description: "The daily user account is a Standard user rather than an Administrator.",
-    recommendation: "Use a Standard user account for daily activities instead of an Administrator account.",
+    title: "Require the daily user account to be a Standard user",
+    passed_message: "The daily user account is a Standard user",
+    failed_message: "The daily user account is an Administrator",
     run: is_standard_user,
 };
 

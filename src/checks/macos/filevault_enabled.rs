@@ -8,8 +8,9 @@ use crate::{
 pub static FILEVAULT_ENABLED: Check = Check {
     id: check_id!("2A5B7807-F149-4001-89C0-A57886E7F291"),
     name: "filevault-enabled",
-    description: "FileVault disk encryption is enabled.",
-    recommendation: "Enable FileVault to encrypt the contents of this Mac.",
+    title: "Require FileVault disk encryption to be enabled",
+    passed_message: "FileVault disk encryption is enabled",
+    failed_message: "FileVault disk encryption is not enabled",
     run: filevault_enabled,
 };
 

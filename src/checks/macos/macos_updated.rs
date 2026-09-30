@@ -8,8 +8,9 @@ use crate::{
 pub static MACOS_UPDATED: Check = Check {
     id: check_id!("36142DDE-DBDE-46F0-8D49-74C52D263D4C"),
     name: "macos-updated",
-    description: "macOS is up to date.",
-    recommendation: "Install the latest available macOS updates.",
+    title: "Require macOS to be up to date",
+    passed_message: "macOS is up to date",
+    failed_message: "macOS is not up to date",
     run: macos_updated,
 };
 

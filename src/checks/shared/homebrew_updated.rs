@@ -10,8 +10,9 @@ use crate::{
 pub static HOMEBREW_UPDATED: Check = Check {
     id: check_id!("DFB671BF-6B06-4E00-90C3-D9A8F392F67D"),
     name: "homebrew-updated",
-    description: "All Homebrew packages are up to date.",
-    recommendation: "Update your Homebrew packages.",
+    title: "Require all Homebrew packages to be up to date",
+    passed_message: "All Homebrew packages are up to date",
+    failed_message: "One or more Homebrew packages are out of date",
     run: homebrew_updated,
 };
 
