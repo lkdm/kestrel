@@ -16,7 +16,7 @@ pub static GATEKEEPER_ENABLED: Check = Check {
 
 fn gatekeeper_enabled(system: &dyn System) -> CheckReturnedResult {
     let result = system
-        .command(&CommandRequest::new("/usr/sbin/spctl", &["--status"]))
+        .command(&CommandRequest::new("/usr/sbin/spctl", &["--status"])) // TODO: add -verbose to get detail about developer id
         .ensure_success()?;
 
     Ok(result.stdout_utf8().contains("assessments enabled"))

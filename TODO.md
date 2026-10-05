@@ -1,5 +1,11 @@
 # TODO
 
+## Split into crates
+
+Split all adapters into crates:
+- cli
+- command
+
 ## Check ergonomics
 
 Rules;
@@ -112,6 +118,9 @@ Integration tests
 ## Checks
 
 Bunch of potential checks
+
+- [ ] ADD: https://github.com/ernw/hardening/blob/master/operating_system/osx/26/Hardening_Guide-macOS_26_Tahoe_1.0.md#ensure-system-volume-is-read-only
+- [ ] ADD: `csrutil authenticated-root status` "Enable authenticated root"
 
 Apple
 - [ ] Require clamav to be running

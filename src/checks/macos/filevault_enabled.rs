@@ -16,7 +16,7 @@ pub static FILEVAULT_ENABLED: Check = Check {
 
 fn filevault_enabled(system: &dyn System) -> CheckReturnedResult {
     let result = system
-        .command(&CommandRequest::new("/usr/bin/fdesetup", &["status"]))
+        .command(&CommandRequest::new("/usr/bin/fdesetup", &["status"])) // TODO: add -extended to get more information about volume
         .ensure_success()?;
 
     Ok(result.stdout_utf8().contains("FileVault is On"))
