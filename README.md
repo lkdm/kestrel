@@ -4,6 +4,8 @@
 
 Kestrel checks your system against practical security controls and provides actionable results.
 
+<img width="912" height="608" alt="Terminal window showing the output of `kestrel scan`" src="https://github.com/user-attachments/assets/a0a86294-a161-427c-b490-be0a60cb6fc8" />
+
 🚧 **Early development:** Kestrel currently focuses on macOS.
 
 ## Install
